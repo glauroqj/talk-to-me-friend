@@ -1,0 +1,27 @@
+{
+  "name": "talk-to-me-friend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "babel-node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glauroqj/talk-to-me-friend.git"
+  },
+  "author": "Glauro Q. Juliani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/glauroqj/talk-to-me-friend/issues"
+  },
+  "homepage": "https://github.com/glauroqj/talk-to-me-friend#readme",
+  "dependencies": {
+    "@babel/core": "^7.6.2",
+    "@babel/node": "^7.6.2",
+    "@babel/preset-env": "^7.6.2",
+    "cookie-parser": "^1.4.5",
+    "express": "^4.17.1"
+  }
+}
