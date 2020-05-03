@@ -1,0 +1,25 @@
+{
+  "name": "talk-to-me-friend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "^13",
+    "npm": "^6.11.0",
+    "yarn": "^1.17.0"
+  },
+  "scripts": {
+    "build-client": "cd client && yarn build",
+    "start": "cd server && yarn start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/glauroqj/talk-to-me-friend.git"
+  },
+  "author": "Glauro Q. Juliani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/glauroqj/talk-to-me-friend/issues"
+  },
+  "homepage": "https://github.com/glauroqj/talk-to-me-friend#readme"
+}
