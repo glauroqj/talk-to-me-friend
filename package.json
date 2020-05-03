@@ -9,8 +9,8 @@
     "yarn": "^1.17.0"
   },
   "scripts": {
-    "build-client": "cd client && yarn && yarn build",
-    "start": "cd server && yarn && yarn start"
+    "heroku-prebuild": "cd client && yarn && yarn build && cd ../server && yarn",
+    "heroku-postbuild": "cd server && yarn start"
   },
   "repository": {
     "type": "git",

@@ -1,1 +1,1 @@
-web: yarn build-client && yarn start
+web: cd server && yarn server
