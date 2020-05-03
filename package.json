@@ -9,8 +9,8 @@
     "yarn": "^1.17.0"
   },
   "scripts": {
-    "build-client": "cd client && yarn build",
-    "start": "cd server && yarn start"
+    "build-client": "cd client && yarn && yarn build",
+    "start": "cd server && yarn && yarn start"
   },
   "repository": {
     "type": "git",
