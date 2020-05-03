@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "heroku-run-build-script": true,
+  "engines": {
+    "node": "^13",
+    "npm": "^6.11.0",
+    "yarn": "^1.17.0"
+  },
   "scripts": {
     "dev": "nodemon --watch './**/*.js' --exec babel-node index.js",
     "start": "babel-node index.js",

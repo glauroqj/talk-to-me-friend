@@ -14,4 +14,4 @@ app.use( express.static(path.join(__dirname, '../client/build')) )
 createRoutes(app)
 createSocket(server)
 
-server.listen(9000, () => console.log('< SERVER IS RUNNING >'))
+server.listen(process.env.PORT || 9000, '0.0.0.0', () => console.log('< SERVER IS RUNNING >'))
