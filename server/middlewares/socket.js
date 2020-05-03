@@ -4,9 +4,11 @@ export default server => {
   io.on('connection', socket => {
     console.log('< NEW CONNECTION FROM CLIENT > ')
 
-    // To subscribe the socket to a given channel
-    socket.on('join', data => {
-      socket.join(data.username)
+
+    socket.on('stream', data => {
+      // socket.join(data.username)
+      // socket.broadcast.emit('stream', data)
+      console.log('< STREAM > ', data)
     })
     
     // To keep track of online users
@@ -24,6 +26,7 @@ export default server => {
     
     // To listen for a client's disconnection from server and intimate other clients about the same
     socket.on('disconnect', data => {
+      console.log('< CLIENT DISCONNECTED > ')
       // socket.broadcast.emit('disconnected', onlineUsers[socket.id].username)
     
       // delete onlineUsers[socket.id]
