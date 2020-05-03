@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import io from 'socket.io-client'
 /** style */
 import * as El from './Channels.style'
@@ -9,32 +9,34 @@ const Channel = () => {
   let canvas = null
   let context = null
 
-  const [ state, setState] = useState({
-    message: ''
-  })
-
   useEffect(() => {
-    socket = io.connect( window.location.href )
     video = document.getElementById('video')
     canvas = document.getElementById('preview')
     context = canvas.getContext('2d')
 
-    connectSocket()
     getUserMedia()
+    connectSocket()
   })
 
   const connectSocket = () => {
+    socket = io({transports: ['websocket'], upgrade: false}).connect( window.location.href )
     console.log('< SOCKET > ', socket)
 
     socket.on('connect', () => {
       console.log('< CLIENT SOCKET CONNECTED >')
     })
 
-    socket.on('stream', data => {
+    socket.on('chat message', msg => {
 
-      console.log('< SEND DATA WITH SOCKET > ', data)
-
+      console.log('< RECEIVING MESSAGE > ', msg)
+      let node = document.createElement('li')
+      node.innerText = msg
+      document.getElementById('messages').appendChild( node )
     })
+
+    // socket.on('stream', data => {
+    //   console.log('< RECEIVING STREAM > ', data)
+    // })
 
   }
 
@@ -61,7 +63,7 @@ const Channel = () => {
   
   const Draw = (video, context) => {
     context.drawImage(video,0,0,1200,900)
-    socket.emit('stream', canvas.toDataURL('image/webp'))
+    socket.emit('stream', socket.id, canvas.toDataURL('image/webp'))
   } 
 
   const getUserMedia = () => {
@@ -86,8 +88,10 @@ const Channel = () => {
 
   const sendEvent = () => {
     console.log('< SEND EVENT > ', socket)
-    socket.emit('stream', `${state.message}`)
 
+    socket.emit('chat message', socket.id, `${ document.getElementById('message-input').value }`)
+
+    document.getElementById('message-input').value = ''
   }
 
   return (
@@ -95,11 +99,10 @@ const Channel = () => {
       <El.ChannelVideo autoplay="true" id="video" />
       <El.ChannelPreview id="preview" />
       <El.ChannelChat>
-        <ul></ul>
+        <ul id="messages"></ul>
         <El.ActionChat>
           <input 
-            value={state.message}
-            onChange={e => setState({ ...state, message: e.target.value })}
+            id="message-input"
           />
           <button onClick={() => sendEvent()}>Send</button>
         </El.ActionChat>
