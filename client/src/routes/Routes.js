@@ -33,7 +33,7 @@ const Routes = () => {
           <Suspense fallback={ <p>Carregando...</p> }>
             <Switch>
               <Route exact path="/" component={Home} />
-              <Route exact path="/room/:id" component={Room} />
+              <Route exact path="/room/:name" component={Room} />
               {/* <PrivateRoute exact path="/timeline" component={Timeline} /> */}
               <Redirect push to="/" />
             </Switch>

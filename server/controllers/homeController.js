@@ -3,7 +3,6 @@ import path from 'path'
 const Html =  path.join(__dirname, '../../client/build', 'index.html')
 
 export default (req, res) => {
-  // app.use( express.static(path.join(__dirname, '../../client/build')) )
-  console.log('< ROOM CONTROLLER > ', Html)
+  console.log('< HOME CONTROLLER > ')
   res.status(200).sendFile(Html)
 }

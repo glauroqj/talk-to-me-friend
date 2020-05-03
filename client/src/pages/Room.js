@@ -1,11 +1,13 @@
 import React from 'react'
+/** component */
+import Channel from '../components/Channel/Channel'
 
-const Home = () => {
+const Room = () => {
   return (
     <div className='animated fadeIn'>
-      ROOM
+      <Channel />
     </div>
   )
 }
 
-export default Home
+export default Room
