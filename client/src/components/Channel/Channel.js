@@ -19,14 +19,17 @@ const Channel = () => {
   })
 
   const connectSocket = () => {
-    socket = io({transports: ['websocket'], upgrade: false}).connect( window.location.href )
+    socket = io({transports: ['websocket'], upgrade: false})
     console.log('< SOCKET > ', socket)
 
     socket.on('connect', () => {
-      console.log('< CLIENT SOCKET CONNECTED >')
+      console.log('< CLIENT SOCKET CONNECTED > ', socket.id)
+
+      socket.emit('create-room', String(window.location.pathname))
+      // socket.emit('add-user', socket.id)
     })
 
-    socket.on('chat message', msg => {
+    socket.on('chat-message', msg => {
 
       console.log('< RECEIVING MESSAGE > ', msg)
       let node = document.createElement('li')
@@ -34,9 +37,10 @@ const Channel = () => {
       document.getElementById('messages').appendChild( node )
     })
 
-    // socket.on('stream', data => {
-    //   console.log('< RECEIVING STREAM > ', data)
-    // })
+    socket.on('add-user', data => {
+      console.log('< RECEIVING STREAM > ', data)
+
+    })
 
   }
 
@@ -63,7 +67,7 @@ const Channel = () => {
   
   const Draw = (video, context) => {
     context.drawImage(video,0,0,1200,900)
-    socket.emit('stream', socket.id, canvas.toDataURL('image/webp'))
+    socket.emit('stream', socket.id, String(window.location.pathname), canvas.toDataURL('image/webp'))
   } 
 
   const getUserMedia = () => {
@@ -89,7 +93,7 @@ const Channel = () => {
   const sendEvent = () => {
     console.log('< SEND EVENT > ', socket)
 
-    socket.emit('chat message', socket.id, `${ document.getElementById('message-input').value }`)
+    socket.emit('chat-message', socket.id, String(window.location.pathname), `${ document.getElementById('message-input').value }`)
 
     document.getElementById('message-input').value = ''
   }

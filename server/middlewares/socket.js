@@ -4,19 +4,18 @@ export default server => {
 
   io.on('connection', socket => {
     console.log('< NEW CONNECTION FROM CLIENT > ')
-
-
-    socket.on('chat message', (id, msg) => {
-      // socket.join(data.username)
-      // socket.broadcast.emit('stream', data)
-      console.log('< MESSAGE > ', msg)
-      io.to(id).emit('chat message', msg)
+    
+    socket.on('create-room', roomName => {
+      console.log('< CREATE ROOM > ', roomName)
+      socket.join(roomName)
     })
 
-    socket.on('stream', (id, data) => {
-      // console.log('< STREAM > ', data)
-      socket.broadcast.to(id).emit('stream', data)
-  })
+    socket.on('chat-message', (id, roomName, msg) => {
+      // socket.join(data.username)
+      // socket.broadcast.emit('stream', data)
+      console.log('< MESSAGE > ', id, roomName, msg)
+      io.in(roomName).emit('chat-message', msg)
+    })
     
     // To keep track of online users
     // socket.on('userPresence', data => {
