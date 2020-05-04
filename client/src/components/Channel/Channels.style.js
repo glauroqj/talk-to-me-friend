@@ -5,12 +5,21 @@ export const ChannelContainer = styled.div`
   width: 100%;
 `
 export const ChannelVideo = styled.video`
-  width: 100%;
+  width: 20%;
   height: 100%;
 `
 export const ChannelPreview = styled.canvas`
   display: none;
 `
+export const ChannelAttendants = styled.div`
+  display: flex;
+
+  > img {
+    width: 100%;
+    height: auto;
+  }
+`
+
 export const ChannelChat = styled.div`
   display: flex;
   position: relative;
@@ -22,7 +31,7 @@ export const ActionChat = styled.div`
   bottom: 0;
   width: 100%;
   height: 40px;
-  
+
   input {
     width: 100%;
   }

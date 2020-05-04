@@ -6,16 +6,12 @@ import * as El from './Channels.style'
 const Channel = () => {
   let socket = null
   let video = null
-  let canvas = null
-  let context = null
 
-  useEffect(() => {
+  useEffect(() => {    
     video = document.getElementById('video')
-    canvas = document.getElementById('preview')
-    context = canvas.getContext('2d')
 
-    // getUserMedia()
     connectSocket()
+    getUserMedia()
 
     return () => {
       console.log('< REMOVE USER >')
@@ -29,13 +25,28 @@ const Channel = () => {
 
     socket.on('connect', () => {
       console.log('< CLIENT SOCKET CONNECTED > ', socket.id)
-
       socket.emit('create-room', String(window.location.pathname))
       socket.emit('add-user-room', socket.id, String(window.location.pathname))
     })
 
-    socket.on('chat-message', msg => {
+    socket.on('stream-video', (userId, data) => {
+      if ( userId && userId !== socket.id && document.getElementById(`attendant-${userId}`) ) {
+        console.log('< STREAM VIDEO > ', userId, data)
+        let image = document.getElementById(`attendant-${userId}`)
+        // image.setAttribute('src', `${data}`)
+        image.src = data
+        // image.setAttribute('src', `data:image/webp;base64,${window.btoa(data)}`)
+      }  
+      if (userId && userId !== socket.id && !document.getElementById(`attendant-${userId}`) ) {
+        /** create image for attendant */
+        let node = document.createElement('img')
+        node.setAttribute('id', `attendant-${userId}`)
+        document.getElementById('attendants').appendChild(node)
+      }
 
+    })
+
+    socket.on('chat-message', msg => {
       console.log('< RECEIVING MESSAGE > ', msg)
       let node = document.createElement('li')
       node.innerText = msg
@@ -72,11 +83,6 @@ const Channel = () => {
   const loadFail = () => {
     console.log('< FAIL TO LOADING CAM >')
   }
-  
-  const Draw = (video, context) => {
-    context.drawImage(video,0,0,1200,900)
-    socket.emit('stream', socket.id, String(window.location.pathname), canvas.toDataURL('image/webp'))
-  } 
 
   const getUserMedia = () => {
     console.log('< GET USER MEDIA >')
@@ -92,7 +98,10 @@ const Channel = () => {
         loadFail
       )
       setInterval(() => {
-          Draw(video, context)
+        const canvas = document.getElementById('preview')
+        canvas.getContext('2d').drawImage(video, 0, 0, 260, 190)
+
+        socket.emit('stream-video', socket.id, String(window.location.pathname), canvas.toDataURL('image/webp'))
       }, .1)
     }
 
@@ -110,6 +119,9 @@ const Channel = () => {
     <El.ChannelContainer>
       <El.ChannelVideo autoplay="true" id="video" />
       <El.ChannelPreview id="preview" />
+
+      <El.ChannelAttendants id="attendants" />
+
       <El.ChannelChat>
         <ul id="messages"></ul>
         <El.ActionChat>

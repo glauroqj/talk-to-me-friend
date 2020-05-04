@@ -19,11 +19,16 @@ export default server => {
 
     socket.on('add-user-room', (id, roomName) => {
       // rooms[roomName].push(id)
-      console.log('< ADD USER IN ROOM > ', rooms, rooms[roomName])
       if ( rooms[roomName] ) {
         rooms[roomName].push(id)
         io.in(roomName).emit('add-user-room', rooms[roomName])
       }
+      console.log('< ADD USER IN ROOM > ', rooms, rooms[roomName])
+    })
+
+    socket.on('stream-video', (id, roomName, canva) => {
+
+      io.in(roomName).emit('stream-video', id, canva)
     })
 
     socket.on('chat-message', (id, roomName, msg) => {
