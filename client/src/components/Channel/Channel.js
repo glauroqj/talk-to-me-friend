@@ -18,6 +18,7 @@ const Channel = () => {
     connectSocket()
 
     return () => {
+      console.log('< REMOVE USER >')
       socket.emit('remove-user-room', socket.id, String(window.location.pathname))
     }
   })
@@ -42,11 +43,11 @@ const Channel = () => {
     })
 
     socket.on('add-user-room', users => {
-      console.log('< RECEIVING STREAM > ', users)
+      console.log('< ADD USER ROOM > ', users)
     })
 
-    socket.on('remove-user-room', users => {
-      console.log('< REMOVE USER FROM ROOM > ', users)
+    socket.on('remove-user-room', rooms => {
+      console.log('< REMOVE USER FROM ROOM > ', rooms)
     })
 
   }
