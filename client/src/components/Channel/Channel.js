@@ -14,8 +14,12 @@ const Channel = () => {
     canvas = document.getElementById('preview')
     context = canvas.getContext('2d')
 
-    getUserMedia()
+    // getUserMedia()
     connectSocket()
+
+    return () => {
+      socket.emit('remove-user-room', socket.id, String(window.location.pathname))
+    }
   })
 
   const connectSocket = () => {
@@ -26,7 +30,7 @@ const Channel = () => {
       console.log('< CLIENT SOCKET CONNECTED > ', socket.id)
 
       socket.emit('create-room', String(window.location.pathname))
-      // socket.emit('add-user', socket.id)
+      socket.emit('add-user-room', socket.id, String(window.location.pathname))
     })
 
     socket.on('chat-message', msg => {
@@ -37,9 +41,12 @@ const Channel = () => {
       document.getElementById('messages').appendChild( node )
     })
 
-    socket.on('add-user', data => {
-      console.log('< RECEIVING STREAM > ', data)
+    socket.on('add-user-room', users => {
+      console.log('< RECEIVING STREAM > ', users)
+    })
 
+    socket.on('remove-user-room', users => {
+      console.log('< REMOVE USER FROM ROOM > ', users)
     })
 
   }

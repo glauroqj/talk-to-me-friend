@@ -6,8 +6,32 @@ export default server => {
     console.log('< NEW CONNECTION FROM CLIENT > ')
     
     socket.on('create-room', roomName => {
-      console.log('< CREATE ROOM > ', roomName)
+      console.log('< CREATE ROOM > ', roomName, rooms)
       socket.join(roomName)
+
+      /** check if room exist */
+      if ( rooms[roomName] ) console.log('< ROOM EXIST >')
+      if ( !rooms[roomName] ) {
+        console.log('< ROOM DOESNT EXIST : CREATING... >')
+        rooms[roomName] = []
+      }
+    })
+
+    socket.on('add-user-room', (id, roomName) => {
+      // rooms[roomName].push(id)
+      console.log('< ADD USER IN ROOM > ', rooms, rooms[roomName])
+      if ( rooms[roomName] ) {
+        rooms[roomName].push(id)
+        io.in(roomName).emit('add-user-room', rooms[roomName])
+      }
+    })
+
+    socket.on('remove-user-room', (id, roomName) => {
+      console.log('< REMOVE USER IN ROOM > ', id, rooms[roomName])
+      if ( rooms[roomName] ) {
+        rooms[roomName] = rooms[roomName].filter(user => user !== id)
+        io.in(roomName).emit('remove-user-room', rooms[roomName])
+      }
     })
 
     socket.on('chat-message', (id, roomName, msg) => {
@@ -32,7 +56,7 @@ export default server => {
     
     // To listen for a client's disconnection from server and intimate other clients about the same
     socket.on('disconnect', data => {
-      console.log('< CLIENT DISCONNECTED > ', data)
+      console.log('< CLIENT DISCONNECTED : SERVER > ', data)
       // socket.broadcast.emit('disconnected', onlineUsers[socket.id].username)
     
       // delete onlineUsers[socket.id]
@@ -41,3 +65,7 @@ export default server => {
 
   })
 }
+
+/**
+  DOC: https://gist.github.com/crtr0/2896891
+*/

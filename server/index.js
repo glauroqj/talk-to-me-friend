@@ -10,6 +10,8 @@ import createRoutes from './routes/createRoutes'
 import createSocket from './middlewares/socket'
 /** middlewares */
 app.use( express.static(path.join(__dirname, '../client/build')) )
+/** global variables */
+global.rooms = {}
 
 createRoutes(app)
 createSocket(server)
