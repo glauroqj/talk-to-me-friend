@@ -11,12 +11,7 @@ const Channel = () => {
     video = document.getElementById('video')
 
     connectSocket()
-    getUserMedia()
-
-    return () => {
-      console.log('< REMOVE USER >')
-      socket.emit('remove-user-room', socket.id, String(window.location.pathname))
-    }
+    // getUserMedia()
   })
 
   const connectSocket = () => {
@@ -27,6 +22,10 @@ const Channel = () => {
       console.log('< CLIENT SOCKET CONNECTED > ', socket.id)
       socket.emit('create-room', String(window.location.pathname))
       socket.emit('add-user-room', socket.id, String(window.location.pathname))
+
+      const peer = window && window.PeerConnection(socket)
+      console.log('< PEER CONNECTION > ', peer)
+
     })
 
     socket.on('stream-video', (userId, data) => {
@@ -68,6 +67,8 @@ const Channel = () => {
     try {
       console.log('< LOAD CAM > ', stream)
       video.srcObject = stream
+      video.controls = true
+      video.muted = true
       video.onloadedmetadata = (e) => {
         console.log('< VIDEO ON > ', e)
         video.play()
@@ -91,12 +92,21 @@ const Channel = () => {
     if ( navigator.getUserMedia ) {
 
       navigator.getUserMedia({
-        video: true,
+        video: {
+          mandatory: {
+            minWidth: 1280,
+            minHeight: 720,
+            maxWidth: 1920,
+            maxHeight: 1080,
+            minAspectRatio: 1.77
+          }
+        },
         audio: false
       },
         loadCamera,
         loadFail
       )
+
       setInterval(() => {
         const canvas = document.getElementById('preview')
         canvas.getContext('2d').drawImage(video, 0, 0, 260, 190)
