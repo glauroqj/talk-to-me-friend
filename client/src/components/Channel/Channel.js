@@ -11,7 +11,7 @@ const Channel = () => {
     video = document.getElementById('video')
 
     connectSocket()
-    // getUserMedia()
+    getUserMedia()
   })
 
   const connectSocket = () => {
@@ -22,10 +22,6 @@ const Channel = () => {
       console.log('< CLIENT SOCKET CONNECTED > ', socket.id)
       socket.emit('create-room', String(window.location.pathname))
       socket.emit('add-user-room', socket.id, String(window.location.pathname))
-
-      const peer = window && window.PeerConnection(socket)
-      console.log('< PEER CONNECTION > ', peer)
-
     })
 
     socket.on('stream-video', (userId, data) => {
@@ -112,7 +108,7 @@ const Channel = () => {
         canvas.getContext('2d').drawImage(video, 0, 0, 260, 190)
 
         socket.emit('stream-video', socket.id, String(window.location.pathname), canvas.toDataURL('image/webp'))
-      }, .1)
+      }, 1000 / 30)
     }
 
   }
