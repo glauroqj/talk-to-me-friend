@@ -9,6 +9,7 @@ const Channel = () => {
   let pc = null
   let sessionDescription = null
   let offer = null
+  let answersFrom = {}
 
   useEffect(() => {    
     video = document.getElementById('video')
@@ -110,8 +111,8 @@ const Channel = () => {
     })
 
     socket.on('add-user-room', (users, userId) => {
-      console.log('< ADD USER ROOM > ', users, userId)
       if (userId && userId !== socket.id && !document.getElementById(`attendant-${userId}`) ) {
+        console.log('< ADD USER ROOM > ', users, userId)
         /** create image for attendant */
         // let node = document.createElement('video')
         // node.setAttribute('autoplay', 'autoplay')
@@ -143,7 +144,13 @@ const Channel = () => {
 
     socket.on('answer-made', data => {
       pc.setRemoteDescription(new sessionDescription(data.answer), () => {
-        document.getElementById(`attendant`).setAttribute('class', 'active')
+        document.getElementById(`attendant`).setAttribute('style', 'display: block')
+
+        if ( !answersFrom[data.userId] ) {
+          createOffer(data.userId)
+          answersFrom[data.userId] = true
+        }
+
       }, loadFail)
     })
 
@@ -229,7 +236,7 @@ const Channel = () => {
       <El.ChannelVideo autoPlay="true" id="video" />
       <El.ChannelPreview id="preview" />
 
-      <video id="attendant" autoPlay="true" />
+      <video id="attendant" autoPlay="true" style={{display: 'none'}} />
       {/* <El.ChannelAttendants id="attendants" /> */}
 
       <El.ChannelChat>
