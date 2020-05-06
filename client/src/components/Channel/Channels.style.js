@@ -6,6 +6,7 @@ export const ChannelContainer = styled.div`
   height: 100vh;
   background-color: #323232;
   position: relative;
+  overflow-x: hidden;
 
   // 830px
   @media( max-width: 830px ) {
@@ -26,10 +27,15 @@ export const ChannelAttendants = styled.div`
     width: 50%;
     height: auto;
 
-    &:fist-of-type {
+    &:first-child {
       -webkit-transform: scaleX(-1);
       transform: scaleX(-1);
     }
+  }
+
+  // 640px
+  @media( max-width: 640px ) {
+    flex-flow: column nowrap;
   }
 `
 

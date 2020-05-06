@@ -11,12 +11,15 @@ const Channel = () => {
   let socket = null
   let checkAgain = null
 
-  const [state, setState] = useState({})
+  const [state, setState] = useState({
+    socket: null,
+    messages: []
+  })
 
   useEffect(() => {
     connectSocket()
     // handleConnection()
-  })
+  }, [])
 
   const connectSocket = () => {
     socket = io({transports: ['websocket'], upgrade: false})
@@ -53,19 +56,8 @@ const Channel = () => {
       console.log('< CLIENT SOCKET CONNECTED > ', socket.id)
       socket.emit('create-room', String(window.location.pathname))
       socket.emit('add-user-room', socket.id, String(window.location.pathname))
-      
-      handleConnection()
-    })
 
-    socket.on('chat-message', payloadMsg => {
-      console.log('< RECEIVING MESSAGE > ', payloadMsg)
-      setState({
-        ...state,
-        messages: [...state.messages, payloadMsg]
-      })
-      // let node = document.createElement('li')
-      // node.innerText = msg
-      // document.getElementById('messages').appendChild( node )
+      handleConnection()
     })
 
     socket.on('add-user-room', (users, userId) => {
@@ -211,10 +203,12 @@ const Channel = () => {
 
   return (
     <El.ChannelContainer>
+      {console.log('< RENDER CHANNEL >')}
       <El.ChannelAttendants id="attendants" />
 
       <Controls
-        socket={socket}
+        socket={state.socket}
+        chatMessages={state.messages}
       />
     </El.ChannelContainer>
   )

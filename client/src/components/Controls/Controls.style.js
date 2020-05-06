@@ -5,20 +5,41 @@ export const ControlsContainer = styled.div`
   width: 100%;
   position: fixed;
   bottom: 0;
+  z-index: 9;
 
   > div {
     width: 100%;
+    border-top: 1px solid #cecece;
   }
 `
-
-export const ControlsChat = styled.div`
+export const ChatContainer = styled.div`
   display: flex;
-  max-width: 350px;
+  background: #f1f1f1;
+  width: 400px;
   position: absolute;
+  right: 0;
+  height: 100vh;
+  z-index: 8;
 
   // 640px
   @media( max-width: 640px ) {
     max-width: 100%;
+  }
+`
+export const ControlsChat = styled.div`
+  display: flex;
+  width: 100%;
+  flex-flow: column nowrap;
+
+  > ul {
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .form-message {
+    position: absolute;
+    bottom: 58px;
+    width: 100%;
   }
 `
 export const ControlsChatActions = styled.div`

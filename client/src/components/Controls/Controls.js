@@ -26,7 +26,7 @@ import MicOffIcon from '@material-ui/icons/MicOff'
 
 import SendIcon from '@material-ui/icons/Send'
 
-const Controls = () => {
+const Controls = ({socket, chatMessages}) => {
   const [micState, setMicState] = useState({
     status: true,
     title: 'Mute'
@@ -39,6 +39,10 @@ const Controls = () => {
     status: false,
     messageText: ''
   })
+
+  useEffect(() => {
+    console.log('< SOCKET CONTROLS > ', socket, chatMessages)
+  }, [])
 
   const disabledMedia = type => {
     console.log('< MUTE MICRIPHONE > ')
@@ -64,69 +68,73 @@ const Controls = () => {
   }
 
   return (
-    <El.ControlsContainer>
-
-      {/* <El.ChannelChat>
-        <ul id="messages"></ul>
-        <El.ActionChat>
-          <input 
-            id="message-input"
-          />
-          <button onClick={() => sendEvent()}>Send</button>
-        </El.ActionChat>
-      </El.ChannelChat> */}
-      <El.ControlsChat>
-        <ul></ul>
-        <form onKeyDown={e => {
-          if (e.key === 'Enter') {
-              e.preventDefault()
-              /** send to socket here */
-              setChatState({...chatState, messageText: ''})
-            }
-          }}
+    <>
+      <El.ControlsContainer>   
+        <BottomNavigation
+          showLabels
         >
-          <FormControl variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-password">Mensagem</InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-password"
-              type={'text'}
-              value={chatState.messageText}
-              onChange={e => setChatState({ ...chatState, messageText: e.target.value}) }
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => {
-                      /** send to socket here */
-                      setChatState({...chatState, messageText: ''})
-                    }}
-                    edge="end"
-                  >
-                    {<SendIcon />}
-                    {/* {values.showPassword ? <Visibility /> : <VisibilityOff />} */}
-                  </IconButton>
-                </InputAdornment>
+          <BottomNavigationAction onClick={() => handleBarClick('mic')} label="Mute" icon={<MicIcon />} />
+          <BottomNavigationAction onClick={() => handleBarClick('cam')} label="Cam" icon={<VideocamIcon />} />
+          <BottomNavigationAction onClick={() => handleBarClick('end')} label="End" icon={<CallEndIcon />} />
+          <BottomNavigationAction onClick={() => handleBarClick('chat')} label="Chat" icon={<ChatIcon />} />
+        </BottomNavigation>
+      </El.ControlsContainer>
+
+      <El.ChatContainer>
+        <El.ControlsChat>
+          <ul>
+            {chatMessages && chatMessages.map(item => (
+              <li>
+                <label>{item.userId}</label>
+                <div>{item.msg}</div>
+              </li>
+            ))}
+          </ul>
+          <form onKeyDown={e => {
+            if (e.key === 'Enter') {
+                e.preventDefault()
+                /** send to socket here */
+                setChatState({...chatState, messageText: ''})
+                socket && socket.emit('chat-message', socket.id, String(window.location.pathname), `${chatState.messageText}`)
               }
-              labelWidth={70}
-            />
-          </FormControl>
-        </form>
-      </El.ControlsChat>
-      
-      <BottomNavigation
-        showLabels
-      >
-        <BottomNavigationAction onClick={() => handleBarClick('mic')} label="Mute" icon={<MicIcon />} />
-        <BottomNavigationAction onClick={() => handleBarClick('cam')} label="Cam" icon={<VideocamIcon />} />
-        <BottomNavigationAction onClick={() => handleBarClick('end')} label="End" icon={<CallEndIcon />} />
-        <BottomNavigationAction onClick={() => handleBarClick('chat')} label="Chat" icon={<ChatIcon />} />
-      </BottomNavigation>
-    </El.ControlsContainer>
+            }}
+          >
+            <FormControl variant="outlined" className="form-message">
+              <InputLabel htmlFor="outlined-adornment-password">Mensagem</InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                type={'text'}
+                value={chatState.messageText}
+                onChange={e => setChatState({ ...chatState, messageText: e.target.value}) }
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => {
+                        /** send to socket here */
+                        setChatState({...chatState, messageText: ''})
+                        socket && socket.emit('chat-message', socket.id, String(window.location.pathname), `${chatState.messageText}`)
+                      }}
+                      edge="end"
+                    >
+                      {<SendIcon />}
+                      {/* {values.showPassword ? <Visibility /> : <VisibilityOff />} */}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                labelWidth={100}
+              />
+            </FormControl>
+          </form>
+        </El.ControlsChat>
+      </El.ChatContainer>
+    </>
   )
 }
 
 Controls.propTypes = {
-  socket: PropTypes.object
+  socket: PropTypes.object,
+  messages: PropTypes.array
 }
 
 export default Controls
