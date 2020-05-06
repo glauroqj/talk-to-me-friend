@@ -47,11 +47,16 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
     <script>
+      window.externalLib = {
+        rtc: false,
+        io: false
+      }
+
       function setGlobal(type) {
         window.externalLib[type] = true
       }
     </script>
-    <script defer src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js" onload="setGlobal('io')"></script>
-    <script defer src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js" onload="setGlobal('rtc')"></script>
+    <script async src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js" onload="setGlobal('io')"></script>
+    <script async src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js" onload="setGlobal('rtc')"></script>
   </body>
 </html>

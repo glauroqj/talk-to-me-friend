@@ -5,16 +5,9 @@ import * as El from './Channels.style'
 
 const Channel = () => {
   let socket = null
-  let video = null
   let checkAgain = null
-  window.externalLib = {
-    rtc: false,
-    io: false
-  }
 
   useEffect(() => {
-    video = document.getElementById('video')
-
     connectSocket()
     // handleConnection()
   })
@@ -182,7 +175,7 @@ const Channel = () => {
       
       if ( !window.externalLib[name] ) {
         let count = 0
-        let checkAgain = setInterval(() => {
+        checkAgain = setInterval(() => {
           
           if ( !window.externalLib[name] && count >= 5 ) {
             clearInterval(checkAgain)
