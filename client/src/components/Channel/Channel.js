@@ -1,9 +1,15 @@
-import React, {useEffect} from 'react'
+import React, {useState, useEffect} from 'react'
 import io from 'socket.io-client'
 /** style */
 import * as El from './Channels.style'
+/** components */
+import {
+  Button
+} from '@material-ui/core'
+import PhotoCamera from '@material-ui/icons/PhotoCamera'
 
 const Channel = () => {
+  window.midiaControls = {}
   let socket = null
   let checkAgain = null
 
@@ -36,7 +42,7 @@ const Channel = () => {
     // navigator.getUserMedia({...mediaOptions}, stream => {
     //   video = document.querySelector('video')
     //   video.srcObject = stream
-    //   video.controls = true
+      // video.controls = true
     //   video.muted = true
     //   video.onloadedmetadata = () => {
     //     video.play()
@@ -135,6 +141,11 @@ const Channel = () => {
         }
 
         if (event.type === 'local') {
+          window.midiaControls = {
+            mute: event.stream.mute,
+            unMute: event.stream.unmute
+          }
+
           video.volume = 0
           try {
               video.setAttributeNode(document.createAttribute('muted'))
@@ -206,9 +217,14 @@ const Channel = () => {
     document.getElementById('message-input').value = ''
   }
 
+  const disabledMedia = type => {
+    console.log('< MUTE MICRIPHONE > ')
+    window.midiaControls.mute(type)
+  }
+
   return (
     <El.ChannelContainer>
-
+      <button onClick={() => disabledMedia('audio')}>MUTE</button>
       <El.ChannelAttendants id="attendants" />
 
       <El.ChannelChat>
