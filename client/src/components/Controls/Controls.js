@@ -26,7 +26,7 @@ import MicOffIcon from '@material-ui/icons/MicOff'
 
 import SendIcon from '@material-ui/icons/Send'
 
-const Controls = ({socket, chatMessages}) => {
+const Controls = ({socket}) => {
   const [micState, setMicState] = useState({
     status: true,
     title: 'Mute'
@@ -41,8 +41,18 @@ const Controls = ({socket, chatMessages}) => {
   })
 
   useEffect(() => {
-    console.log('< SOCKET CONTROLS > ', socket, chatMessages)
-  }, [])
+    console.log('< SOCKET CONTROLS > ', socket)
+    // socket && socket.on('chat-message', payloadMsg => {
+    //   console.log('< RECEIVING MESSAGE > ', payloadMsg)
+    //   setState({
+    //     ...state,
+    //     messages: [...state.messages, payloadMsg]
+    //   })
+    //   // let node = document.createElement('li')
+    //   // node.innerText = msg
+    //   // document.getElementById('messages').appendChild( node )
+    // })
+  }, [socket])
 
   const disabledMedia = type => {
     console.log('< MUTE MICRIPHONE > ')
@@ -83,12 +93,12 @@ const Controls = ({socket, chatMessages}) => {
       <El.ChatContainer>
         <El.ControlsChat>
           <ul>
-            {chatMessages && chatMessages.map(item => (
+            {/* {chatMessages && chatMessages.map(item => (
               <li>
                 <label>{item.userId}</label>
                 <div>{item.msg}</div>
               </li>
-            ))}
+            ))} */}
           </ul>
           <form onKeyDown={e => {
             if (e.key === 'Enter') {
@@ -122,7 +132,7 @@ const Controls = ({socket, chatMessages}) => {
                     </IconButton>
                   </InputAdornment>
                 }
-                labelWidth={100}
+                labelWidth={90}
               />
             </FormControl>
           </form>
@@ -133,8 +143,7 @@ const Controls = ({socket, chatMessages}) => {
 }
 
 Controls.propTypes = {
-  socket: PropTypes.object,
-  messages: PropTypes.array
+  socket: PropTypes.object
 }
 
 export default Controls

@@ -1,81 +1,23 @@
-import React, {useState, useEffect} from 'react'
-import io from 'socket.io-client'
+import React, { useEffect } from 'react'
+import PropTypes from 'prop-types'
 
 /** style */
 import * as El from './Channels.style'
 /** components */
 import Controls from '../Controls/Controls'
+/** notification */
+import { toast } from 'react-toastify'
 
-const Channel = () => {
+const Channel = ({socket}) => {
   window.midiaControls = {}
-  let socket = null
   let checkAgain = null
 
-  const [state, setState] = useState({
-    socket: null,
-    messages: []
-  })
-
   useEffect(() => {
-    connectSocket()
-    // handleConnection()
-  }, [])
-
-  const connectSocket = () => {
-    socket = io({transports: ['websocket'], upgrade: false})
-    console.log('< SOCKET > ', socket)
-
-    navigator.getUserMedia = navigator.getUserMedia ||
-                              navigator.webkitGetUserMedia ||
-                              navigator.mozGetUserMedia ||
-                              navigator.msGetUserMedia
-
-    // const mediaOptions = {
-    //   video: {
-    //     mandatory: {
-    //       minWidth: 1280,
-    //       minHeight: 720,
-    //       maxWidth: 1920,
-    //       maxHeight: 1080,
-    //       minAspectRatio: 1.77
-    //     }
-    //   },
-    //   audio: true
-    // }
-    // navigator.getUserMedia({...mediaOptions}, stream => {
-    //   video = document.querySelector('video')
-    //   video.srcObject = stream
-      // video.controls = true
-    //   video.muted = true
-    //   video.onloadedmetadata = () => {
-    //     video.play()
-    //  }
-    // })
-
-    socket.on('connect', () => {
-      console.log('< CLIENT SOCKET CONNECTED > ', socket.id)
-      socket.emit('create-room', String(window.location.pathname))
-      socket.emit('add-user-room', socket.id, String(window.location.pathname))
-
+    if (socket) {
+      console.log('< SOCKET CHANNELS > ', socket)
       handleConnection()
-    })
-
-    socket.on('add-user-room', (users, userId) => {
-      console.log('< ADD USER ROOM > ', users, userId)
-      // if (userId && userId !== socket.id && !document.getElementById(`attendant-${userId}`) ) {
-      //   /** create image for attendant */
-      //   let node = document.createElement('video')
-      //   node.setAttribute('autoplay', 'autoplay')
-      //   node.setAttribute('id', `attendant-${userId}`)
-      //   document.getElementById('attendants').appendChild(node)
-      // }
-    })
-
-    socket.on('remove-user-room', rooms => {
-      console.log('< REMOVE USER FROM ROOM > ', rooms)
-    })
-
-  }
+    }
+  }, [socket])
 
   const handleConnection = async () => {
     const isRTCLoaded = await externalLibIsLoaded('rtc')
@@ -113,51 +55,52 @@ const Channel = () => {
 
     connection.onstream = event => {
       console.log('< ON STREAM > ', event)
-        let checkElement = document.getElementById(`attendant-${event.streamid}`)
 
-        if (checkElement) {
-          /** duplicated element */
-          checkElement.remove()
+      let checkElement = document.getElementById(`attendant-${event.streamid}`)
+
+      if (checkElement) {
+        /** duplicated element */
+        checkElement.remove()
+      }
+
+      event.mediaElement.removeAttribute('src')
+      event.mediaElement.removeAttribute('srcObject')
+      event.mediaElement.muted = true
+      event.mediaElement.volume = 0
+
+      let video = document.createElement('video')
+
+      try {
+        video.setAttributeNode(document.createAttribute('autoplay'))
+        video.setAttributeNode(document.createAttribute('playsinline'))
+        video.setAttribute('id', `attendant-${event.streamid}`)
+      } catch (e) {
+        video.setAttribute('autoplay', true)
+        video.setAttribute('playsinline', true)
+      }
+
+      if (event.type === 'local') {
+        window.midiaControls = {
+          mute: event.stream.mute,
+          unMute: event.stream.unmute
         }
-
-        event.mediaElement.removeAttribute('src')
-        event.mediaElement.removeAttribute('srcObject')
-        event.mediaElement.muted = true
-        event.mediaElement.volume = 0
-
-        let video = document.createElement('video')
-
+        video.volume = 0
         try {
-            video.setAttributeNode(document.createAttribute('autoplay'))
-            video.setAttributeNode(document.createAttribute('playsinline'))
-            video.setAttribute('id', `attendant-${event.streamid}`)
+          video.setAttributeNode(document.createAttribute('muted'))
         } catch (e) {
-            video.setAttribute('autoplay', true)
-            video.setAttribute('playsinline', true)
+          video.setAttribute('muted', true)
         }
+      }
+      if (event.type === 'remote') toast.success(`${event.streamid} entrou`)
 
-        if (event.type === 'local') {
-          window.midiaControls = {
-            mute: event.stream.mute,
-            unMute: event.stream.unmute
-          }
-
-          video.volume = 0
-          try {
-              video.setAttributeNode(document.createAttribute('muted'))
-          } catch (e) {
-              video.setAttribute('muted', true)
-          }
-        }
-
-        document.getElementById('attendants').appendChild( video )
-
-        video.srcObject = event.stream
+      document.getElementById('attendants').appendChild( video )
+      video.srcObject = event.stream
     }
 
     connection.onstreamended = event => {
       let checkElement = document.getElementById(`attendant-${event.streamid}`)
       if (checkElement) {
+        toast.warn(`${event.streamid} saiu`)
         checkElement.remove()
       }
     }
@@ -170,7 +113,6 @@ const Channel = () => {
     }
 
     connection.openOrJoin(window.location.pathname)
-    
     console.log('< connection > ', connection )
   }
 
@@ -203,15 +145,19 @@ const Channel = () => {
 
   return (
     <El.ChannelContainer>
-      {console.log('< RENDER CHANNEL >')}
       <El.ChannelAttendants id="attendants" />
 
-      <Controls
-        socket={state.socket}
-        chatMessages={state.messages}
-      />
+      {socket && (
+        <Controls
+          socket={socket}
+        />
+      )}
     </El.ChannelContainer>
   )
+}
+
+Channel.propTypes = {
+  socket: PropTypes.object
 }
 
 export default Channel
