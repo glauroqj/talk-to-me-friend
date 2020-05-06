@@ -30,7 +30,10 @@ export default server => {
       // socket.join(data.username)
       // socket.broadcast.emit('stream', data)
       console.log('< MESSAGE > ', id, roomName, msg)
-      io.in(roomName).emit('chat-message', msg)
+      io.in(roomName).emit('chat-message', {
+        userId: id,
+        msg
+      })
     })
         
     // To listen for a client's disconnection from server and intimate other clients about the same

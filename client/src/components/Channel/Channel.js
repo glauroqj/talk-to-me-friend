@@ -1,17 +1,17 @@
 import React, {useState, useEffect} from 'react'
 import io from 'socket.io-client'
+
 /** style */
 import * as El from './Channels.style'
 /** components */
-import {
-  Button
-} from '@material-ui/core'
-import PhotoCamera from '@material-ui/icons/PhotoCamera'
+import Controls from '../Controls/Controls'
 
 const Channel = () => {
   window.midiaControls = {}
   let socket = null
   let checkAgain = null
+
+  const [state, setState] = useState({})
 
   useEffect(() => {
     connectSocket()
@@ -57,11 +57,15 @@ const Channel = () => {
       handleConnection()
     })
 
-    socket.on('chat-message', msg => {
-      console.log('< RECEIVING MESSAGE > ', msg)
-      let node = document.createElement('li')
-      node.innerText = msg
-      document.getElementById('messages').appendChild( node )
+    socket.on('chat-message', payloadMsg => {
+      console.log('< RECEIVING MESSAGE > ', payloadMsg)
+      setState({
+        ...state,
+        messages: [...state.messages, payloadMsg]
+      })
+      // let node = document.createElement('li')
+      // node.innerText = msg
+      // document.getElementById('messages').appendChild( node )
     })
 
     socket.on('add-user-room', (users, userId) => {
@@ -205,38 +209,13 @@ const Channel = () => {
     })
   )
 
-  const loadFail = error => {
-    console.warn('< ERROR > ', error)
-  }
-
-  const sendEvent = () => {
-    console.log('< SEND EVENT > ', socket)
-
-    socket.emit('chat-message', socket.id, String(window.location.pathname), `${ document.getElementById('message-input').value }`)
-
-    document.getElementById('message-input').value = ''
-  }
-
-  const disabledMedia = type => {
-    console.log('< MUTE MICRIPHONE > ')
-    window.midiaControls.mute(type)
-  }
-
   return (
     <El.ChannelContainer>
-      <button onClick={() => disabledMedia('audio')}>MUTE</button>
       <El.ChannelAttendants id="attendants" />
 
-      <El.ChannelChat>
-        <ul id="messages"></ul>
-        <El.ActionChat>
-          <input 
-            id="message-input"
-          />
-          <button onClick={() => sendEvent()}>Send</button>
-        </El.ActionChat>
-      </El.ChannelChat>
-
+      <Controls
+        socket={socket}
+      />
     </El.ChannelContainer>
   )
 }
