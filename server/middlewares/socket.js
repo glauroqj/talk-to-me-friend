@@ -4,22 +4,6 @@ export default server => {
 
   io.on('connection', socket => {
     console.log('< NEW CONNECTION FROM CLIENT > ')
-
-    socket.on('create-offer', data => {
-      console.log('< CREATE OFFER >')
-      socket.in(data.roomName).emit('offer-made', {
-        offer: data.offer,
-        socket: socket.id
-      })
-    })
-
-    socket.on('create-answer', data => {
-      console.log('< CREATE ANSWER >')
-      socket.in(data.roomName).emit('answer-made', {
-        userId: socket.id,
-        answer: data.answer
-      })
-    })
     
     socket.on('create-room', roomName => {
       console.log('< CREATE ROOM > ', roomName, rooms)
@@ -40,11 +24,6 @@ export default server => {
         io.in(roomName).emit('add-user-room', rooms, id)
       }
       console.log('< ADD USER IN ROOM > ', rooms, rooms[roomName])
-    })
-
-    socket.on('stream-video', (id, roomName, canva) => {
-
-      io.in(roomName).emit('stream-video', id, canva)
     })
 
     socket.on('chat-message', (id, roomName, msg) => {
