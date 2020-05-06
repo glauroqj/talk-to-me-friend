@@ -6,15 +6,17 @@ import * as El from './Channels.style'
 const Channel = () => {
   let socket = null
   let video = null
-  let interval = null
+  let checkAgain = null
   window.externalLib = {
-    rtc: false
+    rtc: false,
+    io: false
   }
 
-  useEffect(() => {    
+  useEffect(() => {
     video = document.getElementById('video')
 
     connectSocket()
+    // handleConnection()
   })
 
   const connectSocket = () => {
@@ -26,27 +28,27 @@ const Channel = () => {
                               navigator.mozGetUserMedia ||
                               navigator.msGetUserMedia
 
-    const mediaOptions = {
-      video: {
-        mandatory: {
-          minWidth: 1280,
-          minHeight: 720,
-          maxWidth: 1920,
-          maxHeight: 1080,
-          minAspectRatio: 1.77
-        }
-      },
-      audio: true
-    }
-    navigator.getUserMedia({...mediaOptions}, stream => {
-      video = document.querySelector('video')
-      video.srcObject = stream
-      video.controls = true
-      video.muted = true
-      video.onloadedmetadata = () => {
-        video.play()
-     }
-    })
+    // const mediaOptions = {
+    //   video: {
+    //     mandatory: {
+    //       minWidth: 1280,
+    //       minHeight: 720,
+    //       maxWidth: 1920,
+    //       maxHeight: 1080,
+    //       minAspectRatio: 1.77
+    //     }
+    //   },
+    //   audio: true
+    // }
+    // navigator.getUserMedia({...mediaOptions}, stream => {
+    //   video = document.querySelector('video')
+    //   video.srcObject = stream
+    //   video.controls = true
+    //   video.muted = true
+    //   video.onloadedmetadata = () => {
+    //     video.play()
+    //  }
+    // })
 
     socket.on('connect', () => {
       console.log('< CLIENT SOCKET CONNECTED > ', socket.id)
@@ -81,13 +83,14 @@ const Channel = () => {
   }
 
   const handleConnection = async () => {
-    const isLoaded = await externalLibIsLoaded('rtc')
-    console.log('< CHECK LIB > ', isLoaded)
-    if (!isLoaded) return false
+    const isRTCLoaded = await externalLibIsLoaded('rtc')
+    const isIOLoaded = await externalLibIsLoaded('io')
+    console.log('< CHECK LIB > ', isRTCLoaded, isIOLoaded)
+    if (!isRTCLoaded || !isIOLoaded) return false
 
     const RTCMultiConnection = window.RTCMultiConnection
     const connection = new RTCMultiConnection()
-    connection.socketURL = '/'
+    connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/'
     connection.session = {
       audio: true,
       video: true
@@ -113,12 +116,13 @@ const Channel = () => {
       ]
     }]
 
-    connection.videosContainer = document.getElementById('videos-container')
-
     connection.onstream = event => {
-        let existing = document.getElementById(event.streamid)
-        if (existing && existing.parentNode) {
-          existing.parentNode.removeChild(existing)
+      console.log('< ON STREAM > ', event)
+        let checkElement = document.getElementById(`attendant-${event.streamid}`)
+
+        if (checkElement) {
+          /** duplicated element */
+          checkElement.remove()
         }
 
         event.mediaElement.removeAttribute('src')
@@ -131,12 +135,13 @@ const Channel = () => {
         try {
             video.setAttributeNode(document.createAttribute('autoplay'))
             video.setAttributeNode(document.createAttribute('playsinline'))
+            video.setAttribute('id', `attendant-${event.streamid}`)
         } catch (e) {
             video.setAttribute('autoplay', true)
             video.setAttribute('playsinline', true)
         }
 
-        if(event.type === 'local') {
+        if (event.type === 'local') {
           video.volume = 0
           try {
               video.setAttributeNode(document.createAttribute('muted'))
@@ -144,14 +149,17 @@ const Channel = () => {
               video.setAttribute('muted', true)
           }
         }
+
+        document.getElementById('attendants').appendChild( video )
+
         video.srcObject = event.stream
     }
 
     connection.onstreamended = event => {
-        let mediaElement = document.getElementById(event.streamid)
-        if (mediaElement) {
-            mediaElement.parentNode.removeChild(mediaElement)
-        }
+      let checkElement = document.getElementById(`attendant-${event.streamid}`)
+      if (checkElement) {
+        checkElement.remove()
+      }
     }
 
     connection.onMediaError = e => {
@@ -187,7 +195,7 @@ const Channel = () => {
           }
 
           count++
-        }, 600)
+        }, 1000)
       }
 
     })
@@ -207,10 +215,7 @@ const Channel = () => {
 
   return (
     <El.ChannelContainer>
-      <El.ChannelVideo autoPlay="true" id="video" />
-      <El.ChannelPreview id="preview" />
 
-      <div id="videos-container" />
       <El.ChannelAttendants id="attendants" />
 
       <El.ChannelChat>
@@ -222,6 +227,7 @@ const Channel = () => {
           <button onClick={() => sendEvent()}>Send</button>
         </El.ActionChat>
       </El.ChannelChat>
+
     </El.ChannelContainer>
   )
 }

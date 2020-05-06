@@ -4,18 +4,13 @@ export const ChannelContainer = styled.div`
   display: flex;
   width: 100%;
 `
-export const ChannelVideo = styled.video`
-  width: 20%;
-  height: 100%;
-`
-export const ChannelPreview = styled.canvas`
-  display: none;
-`
 export const ChannelAttendants = styled.div`
   display: flex;
+  width: 80%;
+  flex-flow: row wrap;
 
-  > img {
-    width: 100%;
+  video {
+    width: 50%;
     height: auto;
   }
 `
@@ -23,7 +18,7 @@ export const ChannelAttendants = styled.div`
 export const ChannelChat = styled.div`
   display: flex;
   position: relative;
-  width: 50%;
+  width: 20%;
 `
 export const ActionChat = styled.div`
   display: flex;

@@ -3,11 +3,7 @@ import React from 'react'
 import Channel from '../components/Channel/Channel'
 
 const Room = () => {
-  return (
-    <div className='animated fadeIn'>
-      <Channel />
-    </div>
-  )
+  return <Channel />
 }
 
 export default Room
