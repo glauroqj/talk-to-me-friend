@@ -7,7 +7,8 @@ import {
 } from 'react-router-dom'
 /** style */
 import * as El from './Layout.style'
-
+/** components */
+import Loading from '../components/Loading/Loading.js'
 const Home = lazy(() => import('../pages/Home'))
 const Room = lazy(() => import('../pages/Room'))
 
@@ -30,7 +31,7 @@ const Routes = () => {
       <El.LayoutWrapper>
 
         <El.LayoutContent>
-          <Suspense fallback={ <p>Carregando...</p> }>
+          <Suspense fallback={ <Loading text="Loading..." /> }>
             <Switch>
               <Route exact path="/" component={Home} />
               <Route exact path="/room/:name" component={Room} />

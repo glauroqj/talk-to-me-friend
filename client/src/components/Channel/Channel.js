@@ -1,19 +1,24 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
 /** style */
 import * as El from './Channels.style'
 /** components */
+import Loading from '../Loading/Loading'
 import Controls from '../Controls/Controls'
 /** notification */
 import { toast } from 'react-toastify'
 
 const Channel = ({socket}) => {
-  window.midiaControls = {}
+  window.connection = {}
+  window.userIdLocal = null
   let checkAgain = null
+
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     if (socket) {
+      console.log('< SOCKET CHANNELS > ', socket)
       handleConnection()
     }
   }, [socket])
@@ -79,11 +84,9 @@ const Channel = ({socket}) => {
       }
 
       if (event.type === 'local') {
-        window.midiaControls = {
-          mute: event.stream.mute,
-          unMute: event.stream.unmute
-        }
+        window.userIdLocal = event.streamid
         video.volume = 0
+        
         try {
           video.setAttributeNode(document.createAttribute('muted'))
         } catch (e) {
@@ -91,6 +94,8 @@ const Channel = ({socket}) => {
         }
       }
       if (event.type === 'remote') toast.success(`${event.streamid} entrou`)
+      
+      setIsLoading(false)
 
       document.getElementById('attendants').appendChild( video )
       video.srcObject = event.stream
@@ -113,6 +118,7 @@ const Channel = ({socket}) => {
 
     connection.openOrJoin(window.location.pathname)
     console.log('< connection > ', connection )
+    window.connection = connection
   }
 
   const externalLibIsLoaded = (name) => (
@@ -144,6 +150,13 @@ const Channel = ({socket}) => {
 
   return (
     <El.ChannelContainer>
+      
+      {isLoading && (
+        <El.ChannelLoading>
+          <Loading text="Loading room..." />
+        </El.ChannelLoading>
+      )}
+
       <El.ChannelAttendants id="attendants" />
 
       {socket && (

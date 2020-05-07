@@ -9,6 +9,7 @@ export const ChannelContainer = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
   padding-bottom: 56px;
+  flex-flow: column;
 
   // 830px
   @media( max-width: 830px ) {
@@ -19,6 +20,12 @@ export const ChannelContainer = styled.div`
   @media( max-width: 640px ) {
 
   }
+`
+export const ChannelLoading = styled.div`
+  width: 100%;
+  height: 100%;
+  display flex;
+  justify-content: center;
 `
 export const ChannelAttendants = styled.div`
   display: flex;

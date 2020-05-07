@@ -55,6 +55,8 @@ const Controls = ({socket}) => {
   }, [socket])
 
   const handleBarClick = type => {
+    const { connection, userIdLocal } = window
+
     const options = {
       'chat': () => {
         setChatState({
@@ -63,18 +65,26 @@ const Controls = ({socket}) => {
         })
       },
       'mic': () => {
-        micState.status ? window.midiaControls.mute('audio') : window.midiaControls.unMute('audio')
+        micState.status 
+        ? connection.streamEvents[userIdLocal].stream.mute('audio')
+        : connection.streamEvents[userIdLocal].stream.unmute('audio')
         setMicState({
           ...micState,
           status: !micState.status
         })
+        connection.streamEvents[window.userIdLocal].mediaElement.muted = true
       },
       'cam': () => {
-        camState.status ? window.midiaControls.mute('video') : window.midiaControls.unMute('video')
+        camState.status 
+        ? connection.streamEvents[userIdLocal].stream.mute('video')
+        : connection.streamEvents[userIdLocal].stream.unmute('video')
         setCamState({
           ...micState,
           status: !camState.status
         })
+      },
+      'end': () => {
+        window.location.href = 'https://google.com'
       }
     }
 
