@@ -7,6 +7,8 @@ export const ChannelContainer = styled.div`
   background-color: #323232;
   position: relative;
   overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 56px;
 
   // 830px
   @media( max-width: 830px ) {
@@ -36,6 +38,10 @@ export const ChannelAttendants = styled.div`
   // 640px
   @media( max-width: 640px ) {
     flex-flow: column nowrap;
+
+    video {
+      width: 100%;
+    }
   }
 `
 

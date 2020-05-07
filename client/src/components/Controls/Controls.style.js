@@ -34,12 +34,14 @@ export const ControlsChat = styled.div`
   > ul {
     height: auto;
     overflow-y: auto;
+    padding-bottom: 100px;
   }
 
   .form-message {
     position: absolute;
-    bottom: 58px;
+    bottom: 55px;
     width: 100%;
+    background-color: #fff;
   }
 `
 export const ControlsChatActions = styled.div`

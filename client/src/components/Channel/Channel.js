@@ -14,7 +14,6 @@ const Channel = ({socket}) => {
 
   useEffect(() => {
     if (socket) {
-      console.log('< SOCKET CHANNELS > ', socket)
       handleConnection()
     }
   }, [socket])
