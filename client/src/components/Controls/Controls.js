@@ -88,7 +88,7 @@ const Controls = ({socket}) => {
       }
     }
 
-    if (typeof options[type] === 'function') options[type]()
+    if (typeof options[type] === 'function' && userIdLocal) options[type]()
   }
 
   return (

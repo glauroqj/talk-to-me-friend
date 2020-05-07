@@ -9,9 +9,10 @@ import Controls from '../Controls/Controls'
 /** notification */
 import { toast } from 'react-toastify'
 
+window.connection = {}
+window.userIdLocal = null
+
 const Channel = ({socket}) => {
-  window.connection = {}
-  window.userIdLocal = null
   let checkAgain = null
 
   const [isLoading, setIsLoading] = useState(true)
