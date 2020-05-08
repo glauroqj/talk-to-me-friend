@@ -31,10 +31,15 @@ export const ChannelAttendants = styled.div`
   display: flex;
   width: 100%;
   flex-flow: row wrap;
+  justify-content: center;
 
   video {
-    width: 50%;
+    min-width: 200px;
+    max-width: 50%;
+    flex: 1 auto;
     height: auto;
+    background-color: #cecece;
+    border: 1px solid #323232;
 
     &:first-child {
       -webkit-transform: scaleX(-1);
@@ -44,10 +49,9 @@ export const ChannelAttendants = styled.div`
 
   // 640px
   @media( max-width: 640px ) {
-    flex-flow: column nowrap;
 
     video {
-      width: 100%;
+      min-width: 50%;
     }
   }
 `

@@ -15,7 +15,7 @@ window.userIdLocal = null
 const Channel = ({socket}) => {
   let checkAgain = null
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const [users, setUsers] = useState([])
 
   useEffect(() => {
@@ -168,7 +168,16 @@ const Channel = ({socket}) => {
         </El.ChannelLoading>
       )}
 
-      <El.ChannelAttendants id="attendants" />
+      {/* <El.ChannelAttendants id="attendants" /> */}
+      <El.ChannelAttendants id="attendants" users={ users && users.length || 2 } >
+        <video />
+        <video />
+        <video />
+        <video />
+        <video />
+        <video />
+        <video />
+      </El.ChannelAttendants>
 
       {socket && (
         <Controls
