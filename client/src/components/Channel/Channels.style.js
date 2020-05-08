@@ -38,9 +38,9 @@ export const ChannelAttendants = styled.div`
     max-width: 50%;
     flex: 1 auto;
     height: auto;
-    background-color: #cecece;
-    border: 1px solid #323232;
-
+    max-height: 350px;
+    object-fit: cover;
+    
     &:first-child {
       -webkit-transform: scaleX(-1);
       transform: scaleX(-1);
