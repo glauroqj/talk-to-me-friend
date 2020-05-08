@@ -16,6 +16,7 @@ const Channel = ({socket}) => {
   let checkAgain = null
 
   const [isLoading, setIsLoading] = useState(true)
+  const [users, setUsers] = useState([])
 
   useEffect(() => {
     if (socket) {
@@ -94,7 +95,10 @@ const Channel = ({socket}) => {
           video.setAttribute('muted', true)
         }
       }
-      if (event.type === 'remote') toast.success(`${event.streamid} entrou`)
+
+      /** update users */
+      const userArrays = connection.streamEvents.selectAll()
+      setUsers(userArrays)
       
       setIsLoading(false)
 
@@ -107,6 +111,12 @@ const Channel = ({socket}) => {
       if (checkElement) {
         toast.warn(`${event.streamid} saiu`)
         checkElement.remove()
+
+        /** update users */
+        setTimeout(() => {
+          const userArrays = connection.streamEvents.selectAll()
+          setUsers(userArrays)
+        }, 500)
       }
     }
 
@@ -163,6 +173,7 @@ const Channel = ({socket}) => {
       {socket && (
         <Controls
           socket={socket}
+          users={users}
         />
       )}
     </El.ChannelContainer>

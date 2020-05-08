@@ -25,10 +25,11 @@ import MicIcon from '@material-ui/icons/Mic'
 import MicOffIcon from '@material-ui/icons/MicOff'
 
 import SendIcon from '@material-ui/icons/Send'
+import PersonIcon from '@material-ui/icons/Person'
 
 const messagesArray = []
 
-const Controls = ({socket}) => {
+const Controls = ({socket, users}) => {
   const [micState, setMicState] = useState({
     status: true,
     title: 'Mute'
@@ -53,6 +54,10 @@ const Controls = ({socket}) => {
       })
     }
   }, [socket])
+
+  useEffect(() => {
+    console.log('< CONTROLS USERS > ', users)
+  }, [users])
 
   const handleBarClick = type => {
     const { connection, userIdLocal } = window
@@ -97,6 +102,7 @@ const Controls = ({socket}) => {
         <BottomNavigation
           showLabels
         >
+          <BottomNavigationAction disabled={true} label={`${users.length}`} icon={<PersonIcon />} />
           <BottomNavigationAction onClick={() => handleBarClick('mic')} label="Mute" icon={micState.status ? <MicIcon /> : <MicOffIcon />} />
           <BottomNavigationAction onClick={() => handleBarClick('cam')} label="Cam" icon={camState.status? <VideocamIcon />: <VideocamOffIcon/>} />
           <BottomNavigationAction onClick={() => handleBarClick('end')} label="End" icon={<CallEndIcon />} />
@@ -137,6 +143,7 @@ const Controls = ({socket}) => {
                       <IconButton
                         aria-label="toggle password visibility"
                         onClick={() => {
+                          if (chatState.message === '') return false
                           /** send to socket here */
                           setChatState({...chatState, messageText: ''})
                           socket && socket.emit('chat-message', socket.id, String(window.location.pathname), `${chatState.messageText}`)
@@ -160,7 +167,8 @@ const Controls = ({socket}) => {
 }
 
 Controls.propTypes = {
-  socket: PropTypes.object
+  socket: PropTypes.object,
+  users: PropTypes.array
 }
 
 export default Controls
