@@ -168,16 +168,7 @@ const Channel = ({socket}) => {
         </El.ChannelLoading>
       )}
 
-      {/* <El.ChannelAttendants id="attendants" /> */}
-      <El.ChannelAttendants id="attendants" users={ users && users.length || 2 } >
-        <video />
-        <video />
-        <video />
-        <video />
-        <video />
-        <video />
-        <video />
-      </El.ChannelAttendants>
+      <El.ChannelAttendants id="attendants" />
 
       {socket && (
         <Controls
