@@ -109,11 +109,11 @@ const Channel = ({socket}) => {
     connection.onstreamended = event => {
       let checkElement = document.getElementById(`attendant-${event.streamid}`)
       if (checkElement) {
-        toast.warn(`${event.streamid} saiu`)
         checkElement.remove()
-
+        
         /** update users */
         setTimeout(() => {
+          toast.warn(`${event.streamid} saiu`)
           const userArrays = connection.streamEvents.selectAll()
           setUsers(userArrays)
         }, 500)

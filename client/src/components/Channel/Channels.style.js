@@ -32,6 +32,7 @@ export const ChannelAttendants = styled.div`
   width: 100%;
   flex-flow: row wrap;
   justify-content: center;
+  transition: width 0.2s ease;
 
   video {
     min-width: 200px;
@@ -40,7 +41,7 @@ export const ChannelAttendants = styled.div`
     height: auto;
     max-height: 350px;
     object-fit: cover;
-    
+
     &:first-child {
       -webkit-transform: scaleX(-1);
       transform: scaleX(-1);
