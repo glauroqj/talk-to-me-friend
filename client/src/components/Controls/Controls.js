@@ -5,7 +5,6 @@ import PropTypes from 'prop-types'
 import * as El from './Controls.style'
 /** components */
 import {
-  Button,
   BottomNavigation,
   BottomNavigationAction,
   FormControl,
@@ -55,10 +54,6 @@ const Controls = ({socket, users}) => {
     }
   }, [socket])
 
-  useEffect(() => {
-    console.log('< CONTROLS USERS > ', users)
-  }, [users])
-
   const handleBarClick = type => {
     const { connection, userIdLocal } = window
 
@@ -98,7 +93,7 @@ const Controls = ({socket, users}) => {
 
   return (
     <>
-      <El.ControlsContainer>   
+      <El.ControlsContainer className="animated fadein">   
         <BottomNavigation
           showLabels
         >

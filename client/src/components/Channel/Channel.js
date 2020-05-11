@@ -80,6 +80,7 @@ const Channel = ({socket}) => {
       try {
         video.setAttributeNode(document.createAttribute('autoplay'))
         video.setAttributeNode(document.createAttribute('playsinline'))
+        video.setAttribute('class', 'animated fadeIn')
       } catch (e) {
         video.setAttribute('autoplay', true)
         video.setAttribute('playsinline', true)
