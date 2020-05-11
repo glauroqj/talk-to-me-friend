@@ -15,7 +15,7 @@ window.userIdLocal = null
 const Channel = ({socket}) => {
   let checkAgain = null
 
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [users, setUsers] = useState([])
 
   useEffect(() => {
@@ -75,11 +75,11 @@ const Channel = ({socket}) => {
       event.mediaElement.volume = 0
 
       let video = document.createElement('video')
+      video.setAttribute('id', `attendant-${event.streamid}`)
 
       try {
         video.setAttributeNode(document.createAttribute('autoplay'))
         video.setAttributeNode(document.createAttribute('playsinline'))
-        video.setAttribute('id', `attendant-${event.streamid}`)
       } catch (e) {
         video.setAttribute('autoplay', true)
         video.setAttribute('playsinline', true)
