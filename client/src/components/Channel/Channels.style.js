@@ -5,6 +5,7 @@ export const ChannelContainer = styled.div`
   width: 100%;
   height: 100vh;
   background-color: #323232;
+  transition: background-color 0.2s ease;
   position: relative;
   overflow-x: hidden;
   overflow-y: auto;
@@ -56,7 +57,18 @@ export const ChannelAttendants = styled.div`
     }
   }
 `
+export const ChannelError = styled.div `
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  height: 100%;
+  justify-content: center;
+  padding: 15px;
 
+  h4 {
+    color: #fff;
+  }
+`
 export const ChannelChat = styled.div`
   display: flex;
   position: relative;

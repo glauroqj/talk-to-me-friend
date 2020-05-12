@@ -8,7 +8,9 @@ const Room = () => {
   let socket = null
 
   const [state, setState] = useState({
-    socket: false
+    socket: {
+      disconnected: ''
+    }
   })
 
   useEffect(() => {
@@ -17,7 +19,6 @@ const Room = () => {
 
   const connectSocket = () => {
     socket = io({transports: ['websocket'], upgrade: false})
-    console.log('< SOCKET > ', socket)
 
     navigator.getUserMedia = navigator.getUserMedia ||
                               navigator.webkitGetUserMedia ||
@@ -50,6 +51,15 @@ const Room = () => {
     socket.on('remove-user-room', rooms => {
       console.log('< REMOVE USER FROM ROOM > ', rooms)
     })
+
+    
+    if (socket.disconnect) {
+      console.log('< SOCKET NOT CONNECTED > ', socket)
+      setState({
+        ...state,
+        socket
+      })
+    }
 
   }
 

@@ -6,6 +6,7 @@ import * as El from './Channels.style'
 /** components */
 import Loading from '../Loading/Loading'
 import Controls from '../Controls/Controls'
+import { Button } from '@material-ui/core'
 /** notification */
 import { toast } from 'react-toastify'
 
@@ -17,11 +18,17 @@ const Channel = ({socket}) => {
 
   const [isLoading, setIsLoading] = useState(true)
   const [users, setUsers] = useState([])
+  const [error, setError] = useState(false)
 
   useEffect(() => {
-    if (socket) {
-      console.log('< SOCKET CHANNELS > ', socket)
+    if (socket && socket.connected) {
+      console.log('< SOCKET CONNECTED > ', socket)
       handleConnection()
+    }
+    if (socket && socket.disconnected) {
+      console.log('< SOCKET NOT CONNECTED > ', socket)
+      setError(true)
+      setIsLoading(false)
     }
   }, [socket])
 
@@ -164,14 +171,27 @@ const Channel = ({socket}) => {
     <El.ChannelContainer>
       
       {isLoading && (
-        <El.ChannelLoading>
+        <El.ChannelLoading className="animated fadeIn">
           <Loading text="Loading room..." />
         </El.ChannelLoading>
       )}
 
+      {error && (
+        <El.ChannelError className="animated fadeIn">
+          <h4>Something got wrong, reload page, please!</h4>
+          <Button 
+            variant="contained"
+            color="secondary"
+            onClick={() => window.location.reload() }
+          >
+            Reload Page
+          </Button>
+        </El.ChannelError>
+      )}
+
       <El.ChannelAttendants id="attendants" />
 
-      {socket && (
+      {socket && socket.connected && (
         <Controls
           socket={socket}
           users={users}
