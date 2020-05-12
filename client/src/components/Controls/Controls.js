@@ -44,7 +44,7 @@ const Controls = ({socket, users}) => {
   const [messages, setMessages] = useState([])
 
   useEffect(() => {
-    if (socket && socket.connected) {
+    if (socket && socket.connected && window.userIdLocal) {
       console.log('< SOCKET CONTROLS > ', socket)
       socket.on('chat-message', payloadMsg => {
         console.log('< RECEIVING MESSAGE > ', payloadMsg, chatState)
