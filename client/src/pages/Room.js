@@ -6,6 +6,7 @@ import Channel from '../components/Channel/Channel'
 
 const Room = () => {
   let socket = null
+  let checkAgain = null
 
   const [state, setState] = useState({
     socket: {
@@ -52,14 +53,20 @@ const Room = () => {
       console.log('< REMOVE USER FROM ROOM > ', rooms)
     })
 
-    
-    if (socket.disconnect) {
-      console.log('< SOCKET NOT CONNECTED > ', socket)
-      setState({
-        ...state,
-        socket
-      })
-    }
+    let count = 0
+    checkAgain = setInterval(() => {
+      console.log('< INTERVAL CHECK > ', count, socket)
+      if (socket.disconnect && count >= 5) {
+        console.log('< SOCKET NOT CONNECTED > ', socket)
+        setState({
+          ...state,
+          socket
+        })
+        clearInterval(checkAgain)
+      }
+      if (socket.connected) clearInterval(checkAgain)
+      count++
+    }, 1000)
 
   }
 

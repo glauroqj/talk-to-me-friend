@@ -83,11 +83,11 @@ const Channel = ({socket}) => {
 
       let video = document.createElement('video')
       video.setAttribute('id', `attendant-${event.streamid}`)
+      video.setAttribute('class', 'animated fadeIn')
 
       try {
         video.setAttributeNode(document.createAttribute('autoplay'))
         video.setAttributeNode(document.createAttribute('playsinline'))
-        video.setAttribute('class', 'animated fadeIn')
       } catch (e) {
         video.setAttribute('autoplay', true)
         video.setAttribute('playsinline', true)
