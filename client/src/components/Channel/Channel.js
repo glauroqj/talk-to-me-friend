@@ -103,15 +103,18 @@ const Channel = ({socket}) => {
           video.setAttribute('muted', true)
         }
       }
+      
+      document.getElementById('attendants').appendChild( video )
 
       /** update users */
       const userArrays = connection.streamEvents.selectAll()
       setUsers(userArrays)
       
-      setIsLoading(false)
-
-      document.getElementById('attendants').appendChild( video )
-      video.srcObject = event.stream
+      
+      setTimeout(() => {
+        setIsLoading(false)
+        video.srcObject = event.stream
+      }, 300)
     }
 
     connection.onstreamended = event => {
