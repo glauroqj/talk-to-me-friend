@@ -25,10 +25,9 @@ RUN npm install --unsafe-perm -g full-icu@1.4.0 && \
 # 2. Run yarn to install our dependencies
 # 3. Run startDev that will build and start our application
 
+RUN cd client && yarn && yarn dev && cd ../server && yarn
 
-ENTRYPOINT lerna clean -y && \
-  lerna bootstrap && \
-  lerna run watch --parallel
+ENTRYPOINT yarn dev
 
 
 # DOC: https://nodejs.org/de/docs/guides/nodejs-docker-webapp/
