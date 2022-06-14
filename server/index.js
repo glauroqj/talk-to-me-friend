@@ -9,7 +9,12 @@ const environment = process.env.NODE_ENV || "development";
 import createRoutes from "./routes/createRoutes";
 import createSocket from "./middlewares/socket";
 /** middlewares */
-app.use(express.static(path.join(__dirname, "../client/build")));
+if (environment === "development") {
+  app.use(express.static(path.join(__dirname, "../client/build")));
+} else {
+  app.use(express.static(path.join(__dirname, "../client/build")));
+}
+
 /** global variables */
 global.rooms = {};
 

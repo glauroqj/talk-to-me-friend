@@ -21,20 +21,20 @@ const Routes = () => {
   // }
 
   return (
-    <BrowserRouter>
-      <El.LayoutWrapper>
-        <El.LayoutContent>
+    // <BrowserRouter>
+    <El.LayoutWrapper>
+      APP
+      {/* <El.LayoutContent>
           <Suspense fallback={<Loading text="Loading..." />}>
             <Switch>
               <Route exact path="/" component={Home} />
               <Route exact path="/room/:name" component={Room} />
-              {/* <PrivateRoute exact path="/timeline" component={Timeline} /> */}
               <Redirect push to="/" />
             </Switch>
           </Suspense>
-        </El.LayoutContent>
-      </El.LayoutWrapper>
-    </BrowserRouter>
+        </El.LayoutContent> */}
+    </El.LayoutWrapper>
+    // </BrowserRouter>
   );
 };
 
