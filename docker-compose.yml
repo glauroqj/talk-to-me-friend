@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+
+  talk_to_me_friend:
+    container_name: talk_to_me_friend_web
+    privileged: true
+    working_dir: /app
+    build:
+      context: ./
+      dockerfile: ./_infra/Dockerfile
+    volumes:
+      - ./:/app
+    env_file:
+      - ./_infra/.env
+    ports:
+      - "3000:3000"
+      - "9856:9856"
+      - "9229:9229"
+      - "9000:9000"
