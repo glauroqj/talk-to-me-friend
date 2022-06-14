@@ -1,8 +1,8 @@
 version: '3.8'
 services:
 
-  talk_to_me_friend:
-    container_name: talk_to_me_friend_web
+  talk-to-me-friend:
+    container_name: talk-to-me-friend-web
     privileged: true
     working_dir: /app
     build:

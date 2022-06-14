@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "engines": {
-    "node": "^13",
+    "node": ">13",
     "npm": "^6.11.0",
     "yarn": "^1.17.0"
   },
@@ -14,7 +14,7 @@
     "dev-start": "docker-compose up -d --build && docker ps && yarn dev-logs",
     "dev-stop": "docker-compose stop && docker ps",
     "dev-restart": "yarn dev-stop && yarn dev-start",
-    "dev-logs": "docker logs -f --tail 30 talk_to_me_friend",
+    "dev-logs": "docker logs -f --tail 30 talk-to-me-friend-web",
     "###### | DOCKER COMMON SCRIPTS | ##########################################": "",
     "delete-all": "yarn delete-containers && yarn delete-images && yarn delete-volumes",
     "delete-containers": "docker container stop $(docker container ls -qa) && docker container rm $(docker container ls -qa)",
