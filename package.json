@@ -11,10 +11,10 @@
   "scripts": {
     "heroku-prebuild": "cd client && yarn && yarn build && cd ../server && yarn",
     "----- DOCKER DEVELOPER -----": "",
-    "dev-start": "docker-compose up -d --build && docker ps",
+    "dev-start": "docker-compose up -d --build && docker ps && yarn dev-logs",
     "dev-stop": "docker-compose stop && docker ps",
     "dev-restart": "yarn dev-stop && yarn dev-start",
-    "dev-logs": "docker logs -f --tail 30 talk-to-me-friend-server",
+    "dev-logs": "docker logs -f --tail 30 talk-to-me-friend-client & docker logs -f --tail 30 talk-to-me-friend-server",
     "###### | DOCKER COMMON SCRIPTS | ##########################################": "",
     "delete-all": "yarn delete-containers && yarn delete-images && yarn delete-volumes",
     "delete-containers": "docker container stop $(docker container ls -qa) && docker container rm $(docker container ls -qa)",

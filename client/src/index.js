@@ -1,7 +1,7 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 /** routes */
-import Routes from "./routes/Routes";
+import RoutesApp from "./routes/RoutesApp";
 /** reset css */
 import { CssBaseline } from "@material-ui/core";
 /** notification */
@@ -12,8 +12,7 @@ ReactDOM.render(
   <React.StrictMode>
     <CssBaseline />
     <ToastContainer position="top-right" autoClose={4000} pauseOnHover />
-    <div>TESTE</div>
-    <Routes />
+    <RoutesApp />
   </React.StrictMode>,
   document.getElementById("root")
 );
