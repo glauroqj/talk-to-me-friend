@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 /** style */
 import * as El from "./Layout.style";
 /** components */
@@ -20,18 +20,20 @@ const RoutesApp = () => {
   //   )
   // }
 
+  const SuspenseHOC = (children) => (
+    <Suspense fallback={<Loading text="Loading..." />}>{children}</Suspense>
+  );
+
   return (
     <BrowserRouter>
       <El.LayoutWrapper>
-        APP
         <El.LayoutContent>
-          <Suspense fallback={<Loading text="Loading..." />}>
-            <Routes>
-              <Route path="/" element={Home} />
-              {/* <Route path="/room/:name" element={Room} /> */}
-              {/* <Redirect push to="/" /> */}
-            </Routes>
-          </Suspense>
+          <Routes>
+            <Route path="/" element={SuspenseHOC(<Home />)} />
+            <Route path="/room/:name" element={SuspenseHOC(<Room />)} />
+            {/* <Route path="/room/:name" element={Room} /> */}
+            {/* <Redirect push to="/" /> */}
+          </Routes>
         </El.LayoutContent>
       </El.LayoutWrapper>
     </BrowserRouter>
