@@ -5,7 +5,7 @@
   "main": "index.js",
   "heroku-run-build-script": true,
   "engines": {
-    "node": "^13",
+    "node": ">13",
     "npm": "^6.11.0",
     "yarn": "^1.17.0"
   },
@@ -34,6 +34,6 @@
     "socket.io": "^2.3.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.3"
+    "nodemon": "2.0.16"
   }
 }

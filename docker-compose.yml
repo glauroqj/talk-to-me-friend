@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+
+  client:
+    container_name: talk-to-me-friend-client
+    working_dir: /app
+    build:
+      context: ./client
+      dockerfile: ../_infra/Dockerfile
+      args:
+        FOLDER_NAME: client
+    # network_mode: host
+    volumes:
+      - ./:/app
+      - '/app/node_modules'
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+
+  server:
+    container_name: talk-to-me-friend-server
+    privileged: true
+    working_dir: /app
+    build:
+      context: ./server
+      dockerfile: ../_infra/Dockerfile
+      args:
+        FOLDER_NAME: server
+    volumes:
+      - ./:/app
+    env_file:
+      - ./_infra/.env
+    ports:
+      - "9000:9000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - client
