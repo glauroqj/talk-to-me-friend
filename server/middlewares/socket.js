@@ -1,7 +1,6 @@
 export default (server) => {
   const io = require("socket.io")(server, {
     cors: {
-      origin: "http://localhost:3000",
       methods: ["GET", "POST"],
       allowedHeaders: ["my-custom-header"],
       credentials: true,
@@ -11,9 +10,11 @@ export default (server) => {
   io.on("connection", (socket) => {
     console.log("< NEW CONNECTION FROM CLIENT > ");
 
-    socket.on("create-room", (roomName) => {
-      console.log("< CREATE ROOM > ", roomName, rooms);
+    socket.on("create-room", (roomName, userID) => {
+      console.log("< CREATE ROOM > ", roomName, userID, rooms);
       socket.join(roomName);
+      io.to(roomName).emit("chat-message", "a new user has joined the room");
+      // socket.to(roomName).broadcast.emit("user-connected", userID);
 
       /** check if room exist */
       if (rooms[roomName]) console.log("< ROOM EXIST >");
@@ -23,19 +24,19 @@ export default (server) => {
       }
     });
 
-    socket.on("add-user-room", (id, roomName) => {
-      // rooms[roomName].push(id)
+    socket.on("add-user-room", (userID, roomName) => {
+      // rooms[roomName].push(userID)
       if (rooms[roomName]) {
-        rooms[roomName].push(id);
-        io.in(roomName).emit("add-user-room", rooms, id);
+        rooms[roomName].push(userID);
+        io.in(roomName).emit("add-user-room", rooms, userID);
       }
       console.log("< ADD USER IN ROOM > ", rooms, rooms[roomName]);
     });
 
-    socket.on("chat-message", (id, roomName, msg) => {
+    socket.on("chat-message", (userID, roomName, msg) => {
       // socket.join(data.username)
       // socket.broadcast.emit('stream', data)
-      console.log("< MESSAGE > ", id, roomName, msg);
+      console.log("< MESSAGE > ", userID, roomName, msg);
       io.in(roomName).emit("chat-message", {
         userId: id,
         msg,

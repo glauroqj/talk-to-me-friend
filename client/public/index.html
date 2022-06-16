@@ -63,12 +63,13 @@
         window.externalLib[type] = true
       }
     </script>
-    <script async src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
+    <script async src="https://muazkhan.com:9001/node_modules/webrtc-adapter/out/adapter.js"></script>
     <script async src="https://www.webrtc-experiment.com/common.js"></script>
 
 
-    <script defer src="/libs/socketIO.js" onload="setGlobal('io')"></script>
-    <script defer src="/libs/rtcMulticonnection.js" onload="setGlobal('rtc')"></script>
+    <script defer src="https://muazkhan.com:9001/socket.io/socket.io.js" onload="setGlobal('io')"></script>
+    <script defer src="https://muazkhan.com:9001/dist/RTCMultiConnection.min.js" onload="setGlobal('rtc')"></script>
 <!-- 
     <script defer src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js" onload="setGlobal('io')"></script>
     <script defer src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js" onload="setGlobal('rtc')"></script> -->

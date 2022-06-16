@@ -33,8 +33,8 @@ const Room = () => {
       navigator.msGetUserMedia;
 
     socket.on("connect", () => {
-      console.log("< CLIENT SOCKET CONNECTED > ", socket.id);
-      socket.emit("create-room", String(window.location.pathname));
+      console.log("< CLIENT SOCKET CONNECTED > ", socket?.id);
+      socket.emit("create-room", String(window.location.pathname), socket?.id);
       socket.emit("add-user-room", socket.id, String(window.location.pathname));
 
       setState({
@@ -62,7 +62,7 @@ const Room = () => {
     let count = 0;
     checkAgain = setInterval(() => {
       console.log("< INTERVAL CHECK > ", count, socket);
-      if (socket.disconnect && count >= 5) {
+      if (socket?.disconnect && count >= 5) {
         console.log("< SOCKET NOT CONNECTED > ", socket);
         setState({
           ...state,
@@ -70,7 +70,7 @@ const Room = () => {
         });
         clearInterval(checkAgain);
       }
-      if (socket.connected) clearInterval(checkAgain);
+      if (socket?.connected) clearInterval(checkAgain);
       count++;
     }, 1000);
   };
