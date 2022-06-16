@@ -19,7 +19,12 @@ const Room = () => {
   }, []);
 
   const connectSocket = () => {
-    socket = io();
+    console.log("< CONNECT SOCKET > ", process.env.NODE_ENV);
+    const defineURL = () =>
+      process.env.NODE_ENV === "development"
+        ? "localhost:9000"
+        : "https://talk-to-me-friend.herokuapp.com";
+    socket = io(String(defineURL()));
 
     navigator.getUserMedia =
       navigator.getUserMedia ||

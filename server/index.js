@@ -1,10 +1,10 @@
 import express from "express";
-import { Server } from "http";
+import { createServer } from "http";
 import path from "path";
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const app = express();
-const server = Server(app);
+const server = createServer(app);
 const environment = process.env.NODE_ENV || "development";
 /** routes */
 import createRoutes from "./routes/createRoutes";

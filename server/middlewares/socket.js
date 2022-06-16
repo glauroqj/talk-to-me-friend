@@ -1,8 +1,12 @@
 export default (server) => {
   const io = require("socket.io")(server, {
-    origins: ["http://localhost:3000", "localhost:3000"],
+    cors: {
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"],
+      allowedHeaders: ["my-custom-header"],
+      credentials: true,
+    },
   });
-  // io.set("transports", ["websocket"]);
 
   io.on("connection", (socket) => {
     console.log("< NEW CONNECTION FROM CLIENT > ");
@@ -53,4 +57,6 @@ export default (server) => {
 
 /**
   DOC: https://gist.github.com/crtr0/2896891
+
+  https://socket.io/docs/v3/migrating-from-2-x-to-3-0/#CORS-handling
 */
