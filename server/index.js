@@ -9,6 +9,7 @@ const server = createServer(app);
 const environment = process.env.NODE_ENV || "development";
 const peerServer = ExpressPeerServer(server, {
   debug: true,
+  path: "/room/:name",
 });
 /** routes */
 import createRoutes from "./routes/createRoutes";

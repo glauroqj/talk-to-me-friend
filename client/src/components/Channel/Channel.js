@@ -21,6 +21,10 @@ const Channel = ({ socket }) => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    /** ONLY SOCKET CONNECTIONs */
+  }, []);
+
+  useEffect(() => {
     // if (socket?.connected) {
     //   console.log("< SOCKET CONNECTED > ", socket);
     //   handleConnection();
@@ -30,22 +34,41 @@ const Channel = ({ socket }) => {
     //   setError(true);
     //   setIsLoading(false);
     // }
-    getClientConnection();
+    // getClientConnection();
   }, [socket]);
 
   const getClientConnection = () => {
     if (!socket?.connected) return false;
+    // var peer = new Peer(undefined, {
+    //   path: "/",
+    //   host: "localhost",
+    //   port: 9000,
+    // });
+
     console.log("< CHANNEL - SOCKET > ", socket);
     const { id } = socket;
 
     let checkElement = document.getElementById(`attendant-${id}`);
+
+    // Free public STUN servers provided by Google.
+    const iceServers = {
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" },
+        { urls: "stun:stun2.l.google.com:19302" },
+        { urls: "stun:stun3.l.google.com:19302" },
+        { urls: "stun:stun4.l.google.com:19302" },
+      ],
+    };
+
+    let rtcPeerConnection;
+    let myVideoStream;
+    let myVideo = document.createElement("video");
+
     if (checkElement) {
       /** duplicated element */
       checkElement.remove();
     }
-
-    let myVideoStream;
-    let myVideo = document.createElement("video");
 
     myVideo.muted = true;
     navigator.mediaDevices
@@ -55,12 +78,19 @@ const Channel = ({ socket }) => {
       })
       .then((stream) => {
         myVideoStream = stream;
-        addVideoStream(myVideo, stream);
+        _addVideoStream(myVideo, stream);
       });
 
-    const addVideoStream = (video, stream) => {
+    const _addVideoStream = (video, stream) => {
       video.srcObject = stream;
-      video.addEventListener("loadedmetadata", () => {
+      video.addEventListener("loadedmetadata", async () => {
+        /** connect - start */
+        rtcPeerConnection = new RTCPeerConnection(iceServers);
+        _helperAddLocalTracks(rtcPeerConnection, myVideoStream);
+        rtcPeerConnection.ontrack = _helperSetRemoteStream;
+        rtcPeerConnection.onicecandidate = _helperSendIceCandidate;
+        await _helperHandleOfferAnswer(rtcPeerConnection);
+        /** end connect */
         video.play();
         // myVideo.append(video);
         document.getElementById("attendants").appendChild(video);
@@ -68,11 +98,77 @@ const Channel = ({ socket }) => {
     };
   };
 
+  /** HELPER FUNCTIONS */
+  const _helperAddLocalTracks = (rtcPeerConnection, myVideoStream) => {
+    myVideoStream.getTracks().forEach((track) => {
+      console.log("< _helperAddLocalTracks > ", track);
+      rtcPeerConnection.addTrack(track, myVideoStream);
+    });
+  };
+
+  const _helperSetRemoteStream = (event) => {
+    console.log("< _helperSetRemoteStream > ", event);
+    // let remoteVideo = document.createElement("video");
+    // remoteVideo.muted = true;
+    // remoteVideo.srcObject = event.streams[0]
+  };
+
+  const _helperSendIceCandidate = (event) => {
+    console.log("< _helperSendIceCandidate > ", event);
+  };
+
+  const _helperHandleOfferAnswer = (rtcPeerConnection) => {
+    const { pendingRemoteDescription } = rtcPeerConnection;
+    console.log("< _helperHandleOfferAnswer > ", rtcPeerConnection);
+    if (!pendingRemoteDescription) {
+      _helperCreateOffer(rtcPeerConnection);
+      console.log("< create offer >");
+    } else {
+      _helperCreateAnswer(rtcPeerConnection);
+      console.log("< create answer >");
+    }
+  };
+
+  const _helperCreateOffer = async (rtcPeerConnection) => {
+    let sessionDescription;
+    try {
+      sessionDescription = await rtcPeerConnection.createOffer();
+      rtcPeerConnection.setLocalDescription(sessionDescription);
+    } catch (error) {
+      console.error(error);
+    }
+    console.log(
+      "< _helperCreateOffer > ",
+      sessionDescription,
+      rtcPeerConnection
+    );
+    socket.emit("webrtc_offer", {
+      roomId: String(window?.location?.pathname),
+      sdp: sessionDescription,
+      userID: socket?.id,
+    });
+  };
+
+  const _helperCreateAnswer = async (rtcPeerConnection) => {
+    let sessionDescription;
+    try {
+      sessionDescription = await rtcPeerConnection.createAnswer();
+      rtcPeerConnection.setLocalDescription(sessionDescription);
+    } catch (error) {
+      console.error(error);
+    }
+
+    socket.emit("webrtc_answer", {
+      roomId: String(window?.location?.pathname),
+      sdp: sessionDescription,
+      userID: socket?.id,
+    });
+  };
+  /** END HELPER FUNCTIONS */
+
   const handleConnection = async () => {
-    const isRTCLoaded = await externalLibIsLoaded("rtc");
-    const isIOLoaded = await externalLibIsLoaded("io");
-    console.log("< CHECK LIB > ", isRTCLoaded, isIOLoaded);
     if (!isRTCLoaded || !isIOLoaded) return false;
+    console.log("< CHECK LIB > ", isRTCLoaded, isIOLoaded);
 
     const RTCMultiConnection = window.RTCMultiConnection;
     const connection = new RTCMultiConnection();
@@ -179,30 +275,6 @@ const Channel = ({ socket }) => {
     console.log("< connection > ", connection);
     window.connection = connection;
   };
-
-  const externalLibIsLoaded = (name) =>
-    new Promise((resolve) => {
-      // const isArrayEmpty = Object.keys( window.externalLib ).length
-      console.log("< external name > ", name);
-      if (window.externalLib[name]) resolve(true);
-
-      if (!window.externalLib[name]) {
-        let count = 0;
-        checkAgain = setInterval(() => {
-          if (!window.externalLib[name] && count >= 5) {
-            clearInterval(checkAgain);
-            resolve(false);
-          }
-
-          if (window.externalLib[name]) {
-            clearInterval(checkAgain);
-            resolve(true);
-          }
-
-          count++;
-        }, 1000);
-      }
-    });
 
   return (
     <El.ChannelContainer>

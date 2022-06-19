@@ -26,12 +26,6 @@ const Room = () => {
         : "https://talk-to-me-friend.herokuapp.com";
     socket = io(String(defineURL()));
 
-    navigator.getUserMedia =
-      navigator.getUserMedia ||
-      navigator.webkitGetUserMedia ||
-      navigator.mozGetUserMedia ||
-      navigator.msGetUserMedia;
-
     socket.on("connect", () => {
       console.log("< CLIENT SOCKET CONNECTED > ", socket?.id);
       socket.emit("create-room", String(window.location.pathname), socket?.id);
