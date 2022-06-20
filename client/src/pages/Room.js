@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { io, Manager } from "socket.io-client";
-
+import { io } from "socket.io-client";
+// import P2P from "socket.io-p2p";
 /** component */
 import Channel from "components/Channel/Channel";
 
@@ -29,6 +29,11 @@ const Room = () => {
         : `https://talk-to-me-friend.herokuapp.com`;
 
     socket = io(String(defineURL()));
+    // const p2p = new P2P(socket);
+
+    // p2p.on("peer-msg", function (data) {
+    //   console.log("From a peer %s", data);
+    // });
 
     socket.on("connect", () => {
       console.log("< CLIENT SOCKET CONNECTED > ", socket?.id);
