@@ -17,7 +17,9 @@ export default (server) => {
       // socket.to(roomName).broadcast.emit("user-connected", userID);
 
       /** check if room exist */
-      if (rooms[roomName]) console.log("< ROOM EXIST >");
+      if (rooms[roomName]) {
+        console.log("< ROOM EXIST > ", userID);
+      }
       if (!rooms[roomName]) {
         console.log("< ROOM DOESNT EXIST : CREATING... >");
         rooms[roomName] = [];
@@ -29,6 +31,12 @@ export default (server) => {
       if (rooms[roomName]) {
         rooms[roomName].push(userID);
         io.in(roomName).emit("add-user-room", rooms, userID);
+
+        /** create room creator */
+        if (rooms[roomName].length > 0) {
+          const [roomCreator] = rooms[roomName];
+          socket.emit("add-user-creator-room", roomCreator);
+        }
       }
       console.log("< ADD USER IN ROOM > ", rooms, rooms[roomName]);
     });

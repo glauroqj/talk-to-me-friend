@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { io } from "socket.io-client";
+import { io, Manager } from "socket.io-client";
 
 /** component */
 import Channel from "components/Channel/Channel";
@@ -12,7 +12,10 @@ const Room = () => {
     socket: {
       disconnected: "",
     },
+    roomCreatorID: "",
   });
+
+  const [roomCreator, setRoomCreator] = useState("");
 
   useEffect(() => {
     connectSocket();
@@ -22,8 +25,9 @@ const Room = () => {
     console.log("< CONNECT SOCKET > ", process.env.NODE_ENV);
     const defineURL = () =>
       process.env.NODE_ENV === "development"
-        ? "localhost:9000"
-        : "https://talk-to-me-friend.herokuapp.com";
+        ? `localhost:9000`
+        : `https://talk-to-me-friend.herokuapp.com`;
+
     socket = io(String(defineURL()));
 
     socket.on("connect", () => {
@@ -36,6 +40,11 @@ const Room = () => {
         socket,
       });
       // handleConnection()
+    });
+
+    socket.on("add-user-creator-room", (roomCreatorID) => {
+      console.log("< ROOM CREATOR > ", roomCreatorID);
+      setRoomCreator(roomCreatorID);
     });
 
     socket.on("add-user-room", (users, userId) => {
@@ -69,7 +78,7 @@ const Room = () => {
     }, 1000);
   };
 
-  return <Channel socket={state.socket} />;
+  return <Channel socket={state.socket} roomCreatorID={roomCreator} />;
 };
 
 export default Room;

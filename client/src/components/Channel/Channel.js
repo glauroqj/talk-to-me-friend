@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 window.connection = {};
 window.userIdLocal = null;
 
-const Channel = ({ socket }) => {
+const Channel = ({ socket, roomCreatorID }) => {
   let checkAgain = null;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -30,8 +30,8 @@ const Channel = ({ socket }) => {
     //   setError(true);
     //   setIsLoading(false);
     // }
-    getClientConnection();
-  }, [socket]);
+    if (roomCreatorID) getClientConnection();
+  }, [socket, roomCreatorID]);
 
   const getClientConnection = () => {
     if (!socket?.connected) return false;
@@ -139,14 +139,16 @@ const Channel = ({ socket }) => {
   };
 
   const _helperHandleOfferAnswer = (rtcPeerConnection) => {
-    const { pendingRemoteDescription } = rtcPeerConnection;
-    console.log("< _helperHandleOfferAnswer > ", rtcPeerConnection);
-    if (!pendingRemoteDescription) {
+    console.log(
+      "< _helperHandleOfferAnswer > ",
+      "socket.id: " + socket?.id,
+      "props room id: " + roomCreatorID
+    );
+
+    if (socket?.id === roomCreatorID) {
       _helperCreateOffer(rtcPeerConnection);
-      console.log("< create offer >");
     } else {
       _helperCreateAnswer(rtcPeerConnection);
-      console.log("< create answer >");
     }
   };
 
@@ -178,7 +180,11 @@ const Channel = ({ socket }) => {
     } catch (error) {
       console.error(error);
     }
-
+    console.log(
+      "< _helperCreateAnswer > ",
+      sessionDescription,
+      rtcPeerConnection
+    );
     socket.emit("webrtc_answer", {
       roomId: String(window?.location?.pathname),
       sdp: sessionDescription,
@@ -327,6 +333,7 @@ const Channel = ({ socket }) => {
 
 Channel.propTypes = {
   socket: PropTypes.object,
+  roomCreatorID: PropTypes.string,
 };
 
 export default Channel;
