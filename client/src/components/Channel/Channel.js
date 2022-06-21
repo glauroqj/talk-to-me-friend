@@ -30,7 +30,10 @@ const Channel = ({ socket, roomCreatorID }) => {
     //   setError(true);
     //   setIsLoading(false);
     // }
-    if (roomCreatorID) getClientConnection();
+    if (roomCreatorID) {
+      // getClientConnection();
+      handleConnection();
+    }
   }, [socket, roomCreatorID]);
 
   const getClientConnection = () => {
@@ -53,50 +56,50 @@ const Channel = ({ socket, roomCreatorID }) => {
     };
 
     /** ONLY SOCKET CONNECTIONs */
-    socket.on("start_call", async () => {
-      console.log(
-        "Socket event callback: start_call ",
-        socket?.id === roomCreatorID
-      );
+    // socket.on("start_call", async () => {
+    //   console.log(
+    //     "Socket event callback: start_call ",
+    //     socket?.id === roomCreatorID
+    //   );
 
-      if (socket?.id === roomCreatorID) {
-        rtcPeerConnection = new RTCPeerConnection(iceServers);
-        _helperAddLocalTracks(rtcPeerConnection, myVideoStream);
-        rtcPeerConnection.ontrack = _helperSetRemoteStream;
-        rtcPeerConnection.onicecandidate = _helperSendIceCandidate;
-        await _helperCreateOffer(rtcPeerConnection);
-      }
-    });
+    //   if (socket?.id === roomCreatorID) {
+    //     rtcPeerConnection = new RTCPeerConnection(iceServers);
+    //     _helperAddLocalTracks(rtcPeerConnection, myVideoStream);
+    //     rtcPeerConnection.ontrack = _helperSetRemoteStream;
+    //     rtcPeerConnection.onicecandidate = _helperSendIceCandidate;
+    //     await _helperCreateOffer(rtcPeerConnection);
+    //   }
+    // });
 
-    socket.on("webrtc_offer", async (event) => {
-      console.log("Socket event callback: webrtc_offer ", event);
+    // socket.on("webrtc_offer", async (event) => {
+    //   console.log("Socket event callback: webrtc_offer ", event);
 
-      if (socket?.id !== roomCreatorID) {
-        rtcPeerConnection = new RTCPeerConnection(iceServers);
-        _helperAddLocalTracks(rtcPeerConnection, myVideoStream);
-        rtcPeerConnection.ontrack = _helperSetRemoteStream;
-        rtcPeerConnection.onicecandidate = _helperSendIceCandidate;
-        rtcPeerConnection.setRemoteDescription(
-          new RTCSessionDescription(event)
-        );
-        await _helperCreateAnswer(rtcPeerConnection);
-      }
-    });
+    //   if (socket?.id !== roomCreatorID) {
+    //     rtcPeerConnection = new RTCPeerConnection(iceServers);
+    //     _helperAddLocalTracks(rtcPeerConnection, myVideoStream);
+    //     rtcPeerConnection.ontrack = _helperSetRemoteStream;
+    //     rtcPeerConnection.onicecandidate = _helperSendIceCandidate;
+    //     rtcPeerConnection.setRemoteDescription(
+    //       new RTCSessionDescription(event)
+    //     );
+    //     await _helperCreateAnswer(rtcPeerConnection);
+    //   }
+    // });
 
-    socket.on("webrtc_answer", (event) => {
-      console.log("Socket event callback: webrtc_answer ", event);
-      rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
-    });
+    // socket.on("webrtc_answer", (event) => {
+    //   console.log("Socket event callback: webrtc_answer ", event);
+    //   rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
+    // });
 
-    socket.on("webrtc_ice_candidate", (event) => {
-      console.log("Socket event callback: webrtc_ice_candidate ", event);
-      // ICE candidate configuration.
-      let candidate = new RTCIceCandidate({
-        sdpMLineIndex: event.label,
-        candidate: event.candidate,
-      });
-      rtcPeerConnection.addIceCandidate(candidate);
-    });
+    // socket.on("webrtc_ice_candidate", (event) => {
+    //   console.log("Socket event callback: webrtc_ice_candidate ", event);
+    //   // ICE candidate configuration.
+    //   // let candidate = new RTCIceCandidate({
+    //   //   sdpMLineIndex: event.label,
+    //   //   candidate: event.candidate,
+    //   // });
+    //   // rtcPeerConnection.addIceCandidate(candidate);
+    // });
 
     if (checkElement) {
       /** duplicated element */
@@ -113,16 +116,16 @@ const Channel = ({ socket, roomCreatorID }) => {
         myVideoStream = stream;
         _addVideoStream(myVideo, stream);
       });
+  };
 
-    const _addVideoStream = (video, stream) => {
-      video.srcObject = stream;
-      video.addEventListener("loadedmetadata", async () => {
-        video.play();
-        // myVideo.append(video);
-        document.getElementById("attendants").appendChild(video);
-      });
-      socket.emit("start_call", String(window?.location?.pathname));
-    };
+  const _addVideoStream = (video, stream) => {
+    video.srcObject = stream;
+    video.addEventListener("loadedmetadata", () => {
+      video.play();
+      // myVideo.append(video);
+      document.getElementById("attendants").appendChild(video);
+    });
+    // socket.emit("start_call", String(window?.location?.pathname));
   };
 
   /** HELPER FUNCTIONS */
@@ -166,7 +169,8 @@ const Channel = ({ socket, roomCreatorID }) => {
     console.log("< _helperSendIceCandidate > ", event);
     if (event.candidate) {
       socket.emit("webrtc_ice_candidate", {
-        roomId: String(window?.location?.pathname),
+        ...event,
+        roomName: String(window?.location?.pathname),
         label: event?.candidate?.sdpMLineIndex,
         candidate: event?.candidate?.candidate,
       });
@@ -185,7 +189,7 @@ const Channel = ({ socket, roomCreatorID }) => {
         rtcPeerConnection
       );
       socket.emit("webrtc_offer", {
-        roomId: String(window?.location?.pathname),
+        roomName: String(window?.location?.pathname),
         sdp: sessionDescription,
         userID: socket?.id,
       });
@@ -205,7 +209,7 @@ const Channel = ({ socket, roomCreatorID }) => {
         rtcPeerConnection
       );
       socket.emit("webrtc_answer", {
-        roomId: String(window?.location?.pathname),
+        roomName: String(window?.location?.pathname),
         sdp: sessionDescription,
         userID: socket?.id,
       });
@@ -215,115 +219,143 @@ const Channel = ({ socket, roomCreatorID }) => {
   };
   /** END HELPER FUNCTIONS */
 
-  // const handleConnection = async () => {
-  //   if (!isRTCLoaded || !isIOLoaded) return false;
-  //   console.log("< CHECK LIB > ", isRTCLoaded, isIOLoaded);
+  const handleConnection = async () => {
+    const isRTCLoaded = await externalLibIsLoaded("rtc");
+    const isIOLoaded = await externalLibIsLoaded("io");
+    console.log("< CHECK LIB > ", isRTCLoaded, isIOLoaded);
+    if (!isRTCLoaded || !isIOLoaded) return false;
 
-  //   const RTCMultiConnection = window.RTCMultiConnection;
-  //   const connection = new RTCMultiConnection();
-  //   connection.socketURL = "https://rtcmulticonnection.herokuapp.com:443/";
-  //   connection.session = {
-  //     audio: true,
-  //     video: true,
-  //   };
-  //   connection.sdpConstraints.mandatory = {
-  //     OfferToReceiveAudio: true,
-  //     OfferToReceiveVideo: true,
-  //   };
-  //   connection.mediaConstraints = {
-  //     video: {
-  //       width: { ideal: 1280 },
-  //       height: { ideal: 720 },
-  //       frameRate: 30,
-  //     },
-  //     audio: true,
-  //   };
-  //   connection.iceServers = [
-  //     {
-  //       urls: [
-  //         "stun:stun.l.google.com:19302",
-  //         "stun:stun1.l.google.com:19302",
-  //         "stun:stun2.l.google.com:19302",
-  //         "stun:stun.l.google.com:19302?transport=udp",
-  //       ],
-  //     },
-  //   ];
+    const RTCMultiConnection = window.RTCMultiConnection;
+    const connection = new RTCMultiConnection();
 
-  //   connection.onstream = (event) => {
-  //     console.log("< ON STREAM > ", event);
+    connection.socketURL = "https://muazkhan.com:9001/";
 
-  // let checkElement = document.getElementById(`attendant-${event.streamid}`);
+    connection.session = {
+      audio: true,
+      video: true,
+    };
+    connection.sdpConstraints.mandatory = {
+      OfferToReceiveAudio: true,
+      OfferToReceiveVideo: true,
+    };
+    connection.mediaConstraints = {
+      video: {
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: 30,
+      },
+      audio: true,
+    };
+    connection.iceServers = [
+      {
+        urls: [
+          "stun:stun.l.google.com:19302",
+          "stun:stun1.l.google.com:19302",
+          "stun:stun2.l.google.com:19302",
+          "stun:stun.l.google.com:19302?transport=udp",
+        ],
+      },
+    ];
 
-  // if (checkElement) {
-  //   /** duplicated element */
-  //   checkElement.remove();
-  // }
+    connection.onstream = (event) => {
+      console.log("< ON STREAM > ", event);
 
-  //     event.mediaElement.removeAttribute("src");
-  //     event.mediaElement.removeAttribute("srcObject");
-  //     event.mediaElement.muted = true;
-  //     event.mediaElement.volume = 0;
+      let checkElement = document.getElementById(`attendant-${event.streamid}`);
 
-  // let video = document.createElement("video");
-  // video.setAttribute("id", `attendant-${event.streamid}`);
-  // video.setAttribute("class", "animated fadeIn");
+      if (checkElement) {
+        /** duplicated element */
+        checkElement.remove();
+      }
 
-  // try {
-  //   video.setAttributeNode(document.createAttribute("autoplay"));
-  //   video.setAttributeNode(document.createAttribute("playsinline"));
-  // } catch (e) {
-  //   video.setAttribute("autoplay", true);
-  //   video.setAttribute("playsinline", true);
-  // }
+      event.mediaElement.removeAttribute("src");
+      event.mediaElement.removeAttribute("srcObject");
+      event.mediaElement.muted = true;
+      event.mediaElement.volume = 0;
 
-  //     if (event.type === "local") {
-  //       window.userIdLocal = event.streamid;
-  //       video.volume = 0;
+      let video = document.createElement("video");
+      video.setAttribute("id", `attendant-${event.streamid}`);
+      video.setAttribute("class", "animated fadeIn");
 
-  //       try {
-  //         video.setAttributeNode(document.createAttribute("muted"));
-  //       } catch (e) {
-  //         video.setAttribute("muted", true);
-  //       }
-  //     }
+      try {
+        video.setAttributeNode(document.createAttribute("autoplay"));
+        video.setAttributeNode(document.createAttribute("playsinline"));
+      } catch (e) {
+        video.setAttribute("autoplay", true);
+        video.setAttribute("playsinline", true);
+      }
 
-  // document.getElementById("attendants").appendChild(video);
+      if (event.type === "local") {
+        window.userIdLocal = event?.streamid;
+        video.volume = 0;
 
-  //     /** update users */
-  //     const userArrays = connection.streamEvents.selectAll();
-  //     setUsers(userArrays);
+        try {
+          video.setAttributeNode(document.createAttribute("muted"));
+        } catch (e) {
+          video.setAttribute("muted", true);
+        }
+      }
 
-  //     setTimeout(() => {
-  //       setIsLoading(false);
-  //       video.srcObject = event.stream;
-  //     }, 300);
-  //   };
+      document.getElementById("attendants").appendChild(video);
 
-  //   connection.onstreamended = (event) => {
-  //     let checkElement = document.getElementById(`attendant-${event.streamid}`);
-  //     if (checkElement) {
-  //       checkElement.remove();
+      /** update users */
+      const userArrays = connection.streamEvents.selectAll();
+      setUsers(userArrays);
 
-  //       /** update users */
-  //       setTimeout(() => {
-  //         toast.warn(`${event.streamid} saiu`);
-  //         const userArrays = connection.streamEvents.selectAll();
-  //         setUsers(userArrays);
-  //       }, 500);
-  //     }
-  //   };
+      setTimeout(() => {
+        setIsLoading(false);
+        video.srcObject = event.stream;
+      }, 300);
+    };
 
-  //   connection.onMediaError = (e) => {
-  //     console.warn("< ERROR > ", e);
-  //     if (e.message === "Concurrent mic process limit.") {
-  //       connection.join(connection.sessionid);
-  //     }
-  //   };
+    connection.onstreamended = (event) => {
+      let checkElement = document.getElementById(`attendant-${event.streamid}`);
+      if (checkElement) {
+        checkElement.remove();
 
-  //   connection.openOrJoin(window.location.pathname);
-  //   console.log("< connection > ", connection);
-  //   window.connection = connection;
-  // };
+        /** update users */
+        setTimeout(() => {
+          toast.warn(`${event.streamid} saiu`);
+          const userArrays = connection.streamEvents.selectAll();
+          setUsers(userArrays);
+        }, 500);
+      }
+    };
+
+    connection.onMediaError = (e) => {
+      console.warn("< ERROR > ", e);
+      if (e.message === "Concurrent mic process limit.") {
+        connection.join(connection.sessionid);
+      }
+    };
+
+    connection.openOrJoin(window.location.pathname);
+    console.log("< connection > ", connection);
+    window.connection = connection;
+  };
+
+  const externalLibIsLoaded = (name) =>
+    new Promise((resolve) => {
+      // const isArrayEmpty = Object.keys( window.externalLib ).length
+      console.log("< external name > ", name);
+      if (window.externalLib[name]) resolve(true);
+
+      if (!window.externalLib[name]) {
+        let count = 0;
+        checkAgain = setInterval(() => {
+          if (!window.externalLib[name] && count >= 5) {
+            clearInterval(checkAgain);
+            resolve(false);
+          }
+
+          if (window.externalLib[name]) {
+            clearInterval(checkAgain);
+            resolve(true);
+          }
+
+          count++;
+        }, 1000);
+      }
+    });
 
   return (
     <El.ChannelContainer>

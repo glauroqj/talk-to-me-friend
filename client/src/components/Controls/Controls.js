@@ -144,9 +144,9 @@ const Controls = ({ socket, users }) => {
                   socket &&
                     socket.emit(
                       "chat-message",
-                      socket.id,
+                      socket?.id,
                       String(window.location.pathname),
-                      `${chatState.messageText}`
+                      `${String(chatState?.messageText)}`
                     );
                 }
               }}
