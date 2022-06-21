@@ -9,7 +9,7 @@ services:
       dockerfile: ../_infra/Dockerfile
       args:
         FOLDER_NAME: client
-    # network_mode: host
+    network_mode: host
     volumes:
       - ./:/app
       - '/app/node_modules'
@@ -27,6 +27,7 @@ services:
       dockerfile: ../_infra/Dockerfile
       args:
         FOLDER_NAME: server
+    network_mode: host
     volumes:
       - ./:/app
     env_file:
@@ -37,3 +38,32 @@ services:
       - NODE_ENV=development
     depends_on:
       - client
+
+
+#       version: "3.8"
+# services:
+#  wl_waiting_room:
+#     container_name: wl_waiting_room
+#     working_dir: /app
+#     build:
+#       context: ./
+#       dockerfile: ./infra/development/Dockerfile
+#     volumes:
+#       - ./:/app
+#     env_file:
+#       - .env
+#     ports:
+#       - "5000:5000"
+#     networks:
+#       - sympla_network_geral
+#       - white-lion_comprador_sympla_net
+
+# networks:
+#   outside:
+#     external: true
+#   sympla_network_geral:
+#     external:
+#       name: sympla_network_geral
+#   white-lion_comprador_sympla_net:
+#     external:
+#       name: white-lion_comprador_sympla_net
