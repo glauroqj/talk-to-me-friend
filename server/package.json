@@ -12,8 +12,7 @@
   "scripts": {
     "dev": "nodemon --watch './**/*.js' --exec babel-node index.js",
     "build-local": "cd ../client && sudo yarn build && cd ../server && sudo yarn dev",
-    "start": "babel-node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "babel-node index.js"
   },
   "repository": {
     "type": "git",
