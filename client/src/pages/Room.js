@@ -41,11 +41,16 @@ const Room = () => {
         userID: socket?.id,
         name: session?.name,
       });
-      socket.emit("create-room", String(window.location.pathname), {
+      socket.emit("create-room", {
+        roomName: String(window.location.pathname),
         userID: socket?.id,
         name: session?.name,
       });
-      socket.emit("add-user-room", socket.id, String(window.location.pathname));
+      socket.emit("add-user-room", {
+        userID: socket?.id,
+        roomName: String(window.location.pathname),
+        name: session?.name,
+      });
 
       setState({
         ...state,
@@ -59,8 +64,9 @@ const Room = () => {
       setRoomCreator(roomCreatorID);
     });
 
-    socket.on("add-user-room", (users, userId) => {
-      console.log("< ADD USER ROOM > ", users, userId);
+    socket.on("add-user-room", ({ rooms, userID, users, enterUserName }) => {
+      console.log("< ADD USER ROOM > ", rooms, userID, users, enterUserName);
+      toast.info(`${enterUserName} entrou`);
       // if (userId && userId !== socket.id && !document.getElementById(`attendant-${userId}`) ) {
       //   /** create image for attendant */
       //   let node = document.createElement('video')

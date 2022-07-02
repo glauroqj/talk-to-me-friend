@@ -10,7 +10,7 @@ export default (server) => {
   io.on("connection", (socket) => {
     console.log("< NEW CONNECTION FROM CLIENT > ");
 
-    socket.on("create-room", (roomName, { userID, name }) => {
+    socket.on("create-room", ({ roomName, userID, name }) => {
       console.log("< CREATE ROOM > ", roomName, userID, rooms);
       socket.join(roomName);
       io.to(roomName).emit("chat-message", "a new user has joined the room");
@@ -35,11 +35,16 @@ export default (server) => {
       console.log("< USER NAME AFTER CREATED  > ", users);
     });
 
-    socket.on("add-user-room", (userID, roomName) => {
+    socket.on("add-user-room", ({ userID, roomName, name }) => {
       // rooms[roomName].push(userID)
       if (rooms[roomName]) {
         rooms[roomName].push(userID);
-        io.in(roomName).emit("add-user-room", rooms, userID);
+        io.in(roomName).emit("add-user-room", {
+          rooms,
+          userID,
+          enterUserName: name,
+          users: users[roomName],
+        });
 
         /** create room creator */
         if (rooms[roomName].length > 0) {
@@ -47,7 +52,7 @@ export default (server) => {
           socket.emit("add-user-creator-room", roomCreator);
         }
       }
-      console.log("< ADD USER IN ROOM > ", rooms, rooms[roomName]);
+      console.log("< ADD USER IN ROOM > ", userID, roomName, name);
     });
 
     socket.on("chat-message", (userID, roomName, msg) => {
