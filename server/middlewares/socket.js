@@ -76,23 +76,28 @@ export default (server) => {
       });
 
       const usersKey = Object.keys(users);
-      const leftUserPayload = usersKey.map((room) => {
-        return (users[room] = users[room].filter(
-          (payload) => payload?.userID === socket.id
-        ))[0];
-      });
+
+      let leftUserPayload = false;
+
       usersKey.map((room) => {
+        /** take the exited user */
+        leftUserPayload = users[room].filter(
+          (payload) => payload?.userID === socket?.id
+        )[0];
+
         return (users[room] = users[room].filter(
           (payload) => payload?.userID !== socket.id
         ));
       });
+
       console.log(
         "< CLIENT DISCONNECTED : SERVER > ",
         socket.id,
         usersKey,
-        roomsKeys
+        roomsKeys,
+        leftUserPayload
       );
-      io.emit("remove-user-room", { rooms, leftUserPayload });
+      io.emit("remove-user-room", { rooms, leftUser: leftUserPayload });
     });
   });
 };

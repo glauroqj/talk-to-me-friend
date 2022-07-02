@@ -70,9 +70,9 @@ const Room = () => {
       // }
     });
 
-    socket.on("remove-user-room", ({ rooms, leftUserPayload }) => {
-      console.log("< REMOVE USER FROM ROOM > ", rooms, leftUserPayload);
-      toast.warn(`${leftUserPayload?.name} saiu`);
+    socket.on("remove-user-room", ({ rooms, leftUser }) => {
+      console.log("< REMOVE USER FROM ROOM > ", rooms, leftUser);
+      toast.warn(`${leftUser?.name} saiu`);
     });
 
     let count = 0;
