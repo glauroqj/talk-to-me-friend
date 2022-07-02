@@ -15,12 +15,25 @@ import {
 
 const Home = () => {
   const [state, setState] = useState({
-    value: "",
+    userName: "",
     roomName: "",
   });
 
+  const handleKeys = (e) => {
+    const keyActions = {
+      13: () => {
+        // enter
+        handleSubmit();
+        e.preventDefault();
+      },
+    };
+    const callKeyActions = keyActions[e?.keyCode];
+    if (typeof callKeyActions === "function") callKeyActions();
+  };
+
   const handleSubmit = () => {
-    console.log("< handle >");
+    console.log("< handle > ", state);
+    const _formatRoomName = () => {};
   };
 
   return (
@@ -38,7 +51,7 @@ const Home = () => {
         </Typography>
         <Typography component="h4">Create your room</Typography>
 
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" onKeyDown={handleKeys} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -47,8 +60,8 @@ const Home = () => {
             name="name"
             autoComplete="name"
             autoFocus
-            value={state.value}
-            onChange={(e) => setState({ ...state, value: e.target.value })}
+            value={state.userName}
+            onChange={(e) => setState({ ...state, userName: e.target.value })}
           />
 
           <TextField
@@ -60,7 +73,14 @@ const Home = () => {
             onChange={(e) => setState({ ...state, roomName: e.target.value })}
           />
 
-          <Button variant="contained" color="primary" fullWidth>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            onClick={handleSubmit}
+            disabled={!state.userName || !state.roomName}
+            sx={{ mt: 3, mb: 2 }}
+          >
             Create Room
           </Button>
           {/* <Link to={`/room/${state.roomName}`}></Link> */}
