@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 /** ui */
 import {
   Container,
@@ -16,6 +16,7 @@ import {
 import debounce from "utils/debounce";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState({
     userName: "",
     roomName: "",
@@ -44,6 +45,7 @@ const Home = () => {
 
   const handleSubmit = () => {
     console.log("< handle > ", state);
+    navigate(`room/${formattedUrl}`, { replace: true });
   };
 
   return (
@@ -74,7 +76,6 @@ const Home = () => {
             inputProps={{ maxLength: 40 }}
             onChange={(e) => setState({ ...state, userName: e.target.value })}
           />
-
           <TextField
             margin="normal"
             required
@@ -90,7 +91,9 @@ const Home = () => {
             }}
           />
 
-          <TextField disabled value={formattedUrl} />
+          {state.roomName.length > 0 && (
+            <TextField disabled value={formattedUrl} />
+          )}
 
           <Button
             variant="contained"
