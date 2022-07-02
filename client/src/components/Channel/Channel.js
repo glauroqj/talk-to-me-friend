@@ -7,8 +7,8 @@ import * as El from "./Channels.style";
 import Loading from "components/Loading/Loading";
 import Controls from "components/Controls/Controls";
 import { Button } from "@mui/material";
-/** notification */
-import { toast } from "react-toastify";
+// /** notification */
+// import { toast } from "react-toastify";
 
 window.connection = {};
 window.userIdLocal = null;
@@ -313,11 +313,11 @@ const Channel = ({ socket, roomCreatorID }) => {
         checkElement.remove();
 
         /** update users */
-        setTimeout(() => {
-          toast.warn(`${event.streamid} saiu`);
-          const userArrays = connection.streamEvents.selectAll();
-          setUsers(userArrays);
-        }, 300);
+        // setTimeout(() => {
+        //   toast.warn(`${event.streamid} saiu`);
+        //   const userArrays = connection.streamEvents.selectAll();
+        //   setUsers(userArrays);
+        // }, 300);
       }
     };
 

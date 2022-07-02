@@ -76,6 +76,11 @@ export default (server) => {
       });
 
       const usersKey = Object.keys(users);
+      const leftUserPayload = usersKey.map((room) => {
+        return (users[room] = users[room].filter(
+          (payload) => payload?.userID === socket.id
+        ))[0];
+      });
       usersKey.map((room) => {
         return (users[room] = users[room].filter(
           (payload) => payload?.userID !== socket.id
@@ -87,7 +92,7 @@ export default (server) => {
         usersKey,
         roomsKeys
       );
-      io.emit("remove-user-room", rooms);
+      io.emit("remove-user-room", { rooms, leftUserPayload });
     });
   });
 };

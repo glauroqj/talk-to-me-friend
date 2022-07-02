@@ -6,6 +6,8 @@ import Channel from "components/Channel/Channel";
 import Loading from "components/Loading/Loading";
 /** providers */
 import { useSession } from "providers/SessionProvider";
+/** notification */
+import { toast } from "react-toastify";
 
 const Room = () => {
   const { session } = useSession();
@@ -68,8 +70,9 @@ const Room = () => {
       // }
     });
 
-    socket.on("remove-user-room", (rooms) => {
-      console.log("< REMOVE USER FROM ROOM > ", rooms);
+    socket.on("remove-user-room", ({ rooms, leftUserPayload }) => {
+      console.log("< REMOVE USER FROM ROOM > ", rooms, leftUserPayload);
+      toast.warn(`${leftUserPayload?.name} saiu`);
     });
 
     let count = 0;
