@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 /** ui */
 import {
@@ -12,12 +12,16 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
+/** utils */
+import debounce from "utils/debounce";
 
 const Home = () => {
   const [state, setState] = useState({
     userName: "",
     roomName: "",
   });
+
+  const [formattedUrl, setFormattedUrl] = useState("");
 
   const handleKeys = (e) => {
     const keyActions = {
@@ -31,9 +35,15 @@ const Home = () => {
     if (typeof callKeyActions === "function") callKeyActions();
   };
 
+  const formatRoomName = useCallback(
+    debounce((value) => {
+      const finalUrl = value.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+      setFormattedUrl(finalUrl);
+    }, 300)
+  );
+
   const handleSubmit = () => {
     console.log("< handle > ", state);
-    const _formatRoomName = () => {};
   };
 
   return (
@@ -61,6 +71,7 @@ const Home = () => {
             autoComplete="name"
             autoFocus
             value={state.userName}
+            inputProps={{ maxLength: 40 }}
             onChange={(e) => setState({ ...state, userName: e.target.value })}
           />
 
@@ -70,8 +81,16 @@ const Home = () => {
             fullWidth
             label="Chat room name"
             value={state.roomName}
-            onChange={(e) => setState({ ...state, roomName: e.target.value })}
+            inputProps={{ maxLength: 40 }}
+            onChange={(e) => {
+              if (e.target.value && e.target.value.length >= 0) {
+                formatRoomName(e.target.value);
+              }
+              setState({ ...state, roomName: e.target.value });
+            }}
           />
+
+          <TextField disabled value={formattedUrl} />
 
           <Button
             variant="contained"
