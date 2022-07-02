@@ -10,7 +10,7 @@ export default (server) => {
   io.on("connection", (socket) => {
     console.log("< NEW CONNECTION FROM CLIENT > ");
 
-    socket.on("create-room", (roomName, userID) => {
+    socket.on("create-room", (roomName, { userID, name }) => {
       console.log("< CREATE ROOM > ", roomName, userID, rooms);
       socket.join(roomName);
       io.to(roomName).emit("chat-message", "a new user has joined the room");
@@ -18,11 +18,21 @@ export default (server) => {
       /** check if room exist */
       if (rooms[roomName]) {
         console.log("< ROOM EXIST > ", userID);
+        users[roomName] = [
+          ...users[roomName],
+          {
+            userID,
+            name,
+          },
+        ];
       }
       if (!rooms[roomName]) {
         console.log("< ROOM DOESNT EXIST : CREATING... >");
         rooms[roomName] = [];
+        users[roomName] = [];
       }
+      /** check if user exist ins room */
+      console.log("< USER NAME AFTER CREATED  > ", users);
     });
 
     socket.on("add-user-room", (userID, roomName) => {
@@ -58,6 +68,19 @@ export default (server) => {
       roomsKeys.map((room) => {
         return (rooms[room] = rooms[room].filter((user) => user !== socket.id));
       });
+
+      const usersKey = Object.keys(users);
+      usersKey.map((room) => {
+        return (users[room] = users[room].filter(
+          (payload) => payload?.userID !== socket.id
+        ));
+      });
+      console.log(
+        "< CLIENT DISCONNECTED : SERVER > ",
+        socket.id,
+        usersKey,
+        roomsKeys
+      );
       io.emit("remove-user-room", rooms);
     });
   });

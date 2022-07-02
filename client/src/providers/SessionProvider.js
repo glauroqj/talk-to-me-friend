@@ -1,29 +1,35 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
+/** containers */
+import GetUserSessionModal from "containers/modal/GetUserSessionModal";
 
 const SessionContext = createContext({
-  user: {} /** default values */,
+  session: {} /** default values */,
 });
 
 const SessionProvider = ({ children }) => {
-  const [user, setUser] = useState({
+  const [session, setSession] = useState({
     name: "",
     image: "",
+    isModalOpen: false,
+    isLoading: true,
   });
 
   useEffect(() => {
     checkUserSessionMethod();
   }, []);
 
-  const loginMethod = async () => {
-    // const result = await loginService();
-    // console.log("< LOGIN METHOD > ", result);
-    // setUser(result);
-  };
+  // const loginMethod = async () => {
+  //   // const result = await loginService();
+  //   // console.log("< LOGIN METHOD > ", result);
+  //   // setSession(result);
+  // };
 
   const logoutMethod = async () => {
-    setUser({
+    setSession({
       name: "",
       image: "",
+      isModalOpen: false,
+      isLoading: false,
     });
   };
 
@@ -34,20 +40,44 @@ const SessionProvider = ({ children }) => {
 
     if (sessionUser) {
       const parsedValue = JSON.parse(sessionUser);
-      setUser(parsedValue);
+      setSession({
+        ...parsedValue,
+        isModalOpen: false,
+        isLoading: false,
+      });
       return;
     }
     if (!sessionUser && window?.location?.pathname !== "/") {
+      /** shows a modal */
+      setSession({
+        ...session,
+        isModalOpen: true,
+        isLoading: true,
+      });
     }
-    // const result = await fetchUserService();
-    // console.log("< CHECK USER LOGIN > ", result);
-    // setUser(result);
   };
 
   return (
     <SessionContext.Provider
-      value={{ user, checkUserSessionMethod, loginMethod, logoutMethod }}
+      value={{ session, checkUserSessionMethod, logoutMethod }}
     >
+      <GetUserSessionModal
+        isOpen={session?.isModalOpen}
+        send={(payload) => {
+          // console.log('< SAVE PAYLOAD > ', payload)
+          window.localStorage.setItem(
+            process.env.REACT_APP_USER_SESSION_NAME,
+            JSON.stringify(payload)
+          );
+          setSession({
+            ...session,
+            ...payload,
+            isModalOpen: false,
+            isLoading: false,
+          });
+        }}
+      />
+
       {children}
     </SessionContext.Provider>
   );

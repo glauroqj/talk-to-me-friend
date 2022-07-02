@@ -18,10 +18,10 @@ import debounce from "utils/debounce";
 import { useSession } from "providers/SessionProvider";
 
 const Home = () => {
-  const { user } = useSession();
+  const { session } = useSession();
   const navigate = useNavigate();
   const [state, setState] = useState({
-    userName: user?.name || "",
+    userName: session?.name || "",
     roomName: "",
   });
 
@@ -72,7 +72,7 @@ const Home = () => {
         <Typography component="h1" variant="h5">
           Talk to your Friend
         </Typography>
-        <Typography component="h4">Create your room</Typography>
+        <Typography component="h2">Create your room for FREE</Typography>
 
         <Box component="form" onKeyDown={handleKeys} sx={{ mt: 1 }}>
           <TextField

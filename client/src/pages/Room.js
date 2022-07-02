@@ -3,8 +3,12 @@ import { io } from "socket.io-client";
 // import P2P from "socket.io-p2p";
 /** component */
 import Channel from "components/Channel/Channel";
+import Loading from "components/Loading/Loading";
+/** providers */
+import { useSession } from "providers/SessionProvider";
 
 const Room = () => {
+  const { session } = useSession();
   let socket = null;
   let checkAgain = null;
 
@@ -18,8 +22,8 @@ const Room = () => {
   const [roomCreator, setRoomCreator] = useState("");
 
   useEffect(() => {
-    connectSocket();
-  }, []);
+    !session?.isLoading && connectSocket();
+  }, [session?.isLoading]);
 
   const connectSocket = () => {
     console.log("< CONNECT SOCKET > ", process.env.NODE_ENV);
@@ -31,8 +35,14 @@ const Room = () => {
     socket = io(String(defineURL()));
 
     socket.on("connect", () => {
-      console.log("< CLIENT SOCKET CONNECTED > ", socket?.id);
-      socket.emit("create-room", String(window.location.pathname), socket?.id);
+      console.log("< CLIENT SOCKET CONNECTED > ", {
+        userID: socket?.id,
+        name: session?.name,
+      });
+      socket.emit("create-room", String(window.location.pathname), {
+        userID: socket?.id,
+        name: session?.name,
+      });
       socket.emit("add-user-room", socket.id, String(window.location.pathname));
 
       setState({
@@ -77,6 +87,8 @@ const Room = () => {
       count++;
     }, 1000);
   };
+
+  if (session?.isLoading) return <Loading text="Loading..." />;
 
   return <Channel socket={state.socket} roomCreatorID={roomCreator} />;
 };

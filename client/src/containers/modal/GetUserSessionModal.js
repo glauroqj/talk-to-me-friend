@@ -11,14 +11,25 @@ import Button from "@mui/material/Button";
 
 const GetUserSessionModal = ({ isOpen, send }) => {
   const [state, setState] = useState({
-    userName: "",
+    name: "",
     image: "",
   });
 
   return (
     <Dialog open={isOpen} sx={{ m: 0, p: 2 }} maxWidth={"xs"} fullWidth>
-      <DialogTitle>Informe seus dados</DialogTitle>
-
+      <DialogTitle>Before you go in!</DialogTitle>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "left",
+          padding: "4px 24px",
+        }}
+      >
+        <Typography component="h5">
+          Please, tell us your name. It's just for exhibition
+        </Typography>
+      </Box>
       <Box
         component="form"
         mt={2}
@@ -28,7 +39,10 @@ const GetUserSessionModal = ({ isOpen, send }) => {
           flexFlow: "column",
         }}
         onKeyDown={(e) => {
-          e?.keyCode === 13 && (e.preventDefault(), send());
+          if (e?.keyCode === 13 && state?.name !== "") {
+            e.preventDefault();
+            send(state);
+          }
         }}
       >
         <Box
@@ -44,7 +58,7 @@ const GetUserSessionModal = ({ isOpen, send }) => {
             fullWidth
             autoFocus
             required
-            value={state?.userName}
+            value={state?.name}
             onChange={(e) => setState({ ...state, name: e?.target.value })}
             inputProps={{ maxLength: 30 }}
           />
@@ -60,7 +74,7 @@ const GetUserSessionModal = ({ isOpen, send }) => {
             color={"primary"}
             variant="contained"
             onClick={() => send(state)}
-            disabled={state?.name === "" || state?.role === "" ? true : false}
+            disabled={state?.name === ""}
           >
             Save
           </Button>
