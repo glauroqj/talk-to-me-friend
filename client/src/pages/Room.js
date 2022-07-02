@@ -25,7 +25,7 @@ const Room = () => {
 
   useEffect(() => {
     !session?.isLoading && connectSocket();
-  }, [session?.isLoading]);
+  }, [session, session?.isLoading]);
 
   const connectSocket = () => {
     console.log("< CONNECT SOCKET > ", process.env.NODE_ENV);

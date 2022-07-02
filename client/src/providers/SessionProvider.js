@@ -18,11 +18,13 @@ const SessionProvider = ({ children }) => {
     checkUserSessionMethod();
   }, []);
 
-  // const loginMethod = async () => {
-  //   // const result = await loginService();
-  //   // console.log("< LOGIN METHOD > ", result);
-  //   // setSession(result);
-  // };
+  const loginMethod = async (payload) => {
+    setSession({
+      ...payload,
+      isModalOpen: false,
+      isLoading: false,
+    });
+  };
 
   const logoutMethod = async () => {
     setSession({
@@ -59,7 +61,7 @@ const SessionProvider = ({ children }) => {
 
   return (
     <SessionContext.Provider
-      value={{ session, checkUserSessionMethod, logoutMethod }}
+      value={{ session, checkUserSessionMethod, loginMethod, logoutMethod }}
     >
       <GetUserSessionModal
         isOpen={session?.isModalOpen}

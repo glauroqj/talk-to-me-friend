@@ -73,7 +73,7 @@ export default (server) => {
 
     // To listen for a client's disconnection from server and intimate other clients about the same
     socket.on("disconnect", () => {
-      console.log("< CLIENT DISCONNECTED : SERVER > ", socket.id);
+      console.log("< CLIENT DISCONNECTED : SERVER > ", socket?.id);
 
       const roomsKeys = Object.keys(rooms);
       roomsKeys.map((room) => {

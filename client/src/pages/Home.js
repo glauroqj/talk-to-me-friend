@@ -18,7 +18,7 @@ import debounce from "utils/debounce";
 import { useSession } from "providers/SessionProvider";
 
 const Home = () => {
-  const { session } = useSession();
+  const { session, loginMethod } = useSession();
   const navigate = useNavigate();
   const [state, setState] = useState({
     userName: session?.name || "",
@@ -57,6 +57,10 @@ const Home = () => {
       })
     );
     navigate(`room/${formattedUrl}`, { replace: true });
+    loginMethod({
+      name: String(state?.userName),
+      image: "",
+    });
   };
 
   return (
