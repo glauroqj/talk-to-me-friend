@@ -12,7 +12,7 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
-} from "@material-ui/core";
+} from "@mui/material";
 /** icons */
 import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";

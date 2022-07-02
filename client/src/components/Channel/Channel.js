@@ -6,7 +6,7 @@ import * as El from "./Channels.style";
 /** components */
 import Loading from "components/Loading/Loading";
 import Controls from "components/Controls/Controls";
-import { Button } from "@material-ui/core";
+import { Button } from "@mui/material";
 /** notification */
 import { toast } from "react-toastify";
 
