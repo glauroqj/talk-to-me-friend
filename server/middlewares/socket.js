@@ -57,6 +57,12 @@ export default (server) => {
       io.to(roomName).emit("chat-message", {
         id: userID,
         msg,
+        users: users[roomName],
+        // user: {
+        //   name: users[roomName].filter(
+        //     (payload) => payload.userID === userID
+        //   )[0],
+        // },
       });
     });
 
