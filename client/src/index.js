@@ -9,15 +9,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider as ThemeProviderMaterialUI } from "@mui/material/styles";
 import { ThemeProvider } from "styled-components";
 import { GlobalStyle, Theme, ThemeMaterialUI } from "assets/theme";
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <CssBaseline />
-//     <ToastContainer position="top-right" autoClose={4000} pauseOnHover />
-//     <RoutesApp />
-//   </React.StrictMode>,
-//   document.getElementById("root")
-// );
+/** providers */
+import { SessionProvider } from "providers/SessionProvider";
 
 const appTree = (
   <React.StrictMode>
@@ -25,7 +18,9 @@ const appTree = (
     <ThemeProviderMaterialUI theme={ThemeMaterialUI}>
       <ThemeProvider theme={Theme}>
         <ToastContainer position="top-right" autoClose={4000} pauseOnHover />
-        <RoutesApp />
+        <SessionProvider>
+          <RoutesApp />
+        </SessionProvider>
       </ThemeProvider>
     </ThemeProviderMaterialUI>
   </React.StrictMode>

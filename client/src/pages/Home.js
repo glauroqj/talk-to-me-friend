@@ -14,11 +14,14 @@ import {
 } from "@mui/material";
 /** utils */
 import debounce from "utils/debounce";
+/** providers */
+import { useSession } from "providers/SessionProvider";
 
 const Home = () => {
+  const { user } = useSession();
   const navigate = useNavigate();
   const [state, setState] = useState({
-    userName: "",
+    userName: user?.name || "",
     roomName: "",
   });
 
@@ -44,7 +47,15 @@ const Home = () => {
   );
 
   const handleSubmit = () => {
-    console.log("< handle > ", state);
+    if (!state?.userName || !state.roomName) return false;
+    console.log("< handle > ", state, process.env.REACT_APP_USER_SESSION_NAME);
+    window.localStorage.setItem(
+      process.env.REACT_APP_USER_SESSION_NAME,
+      JSON.stringify({
+        name: String(state?.userName),
+        image: "",
+      })
+    );
     navigate(`room/${formattedUrl}`, { replace: true });
   };
 
@@ -68,8 +79,9 @@ const Home = () => {
             margin="normal"
             required
             fullWidth
-            label="Your Name"
+            label="Name"
             name="name"
+            type={"text"}
             autoComplete="name"
             autoFocus
             value={state.userName}
