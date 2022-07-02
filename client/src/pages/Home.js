@@ -9,6 +9,8 @@ import {
   InputLabel,
   Input,
   Button,
+  Typography,
+  TextField,
 } from "@mui/material";
 
 const Home = () => {
@@ -16,6 +18,10 @@ const Home = () => {
     value: "",
     roomName: "",
   });
+
+  const handleSubmit = () => {
+    console.log("< handle >");
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -27,37 +33,38 @@ const Home = () => {
           alignItems: "center",
         }}
       >
-        <Grid item xs={12}>
-          <FormControl>
-            <InputLabel htmlFor="my-input">Your name</InputLabel>
-            <Input
-              id="my-input"
-              aria-describedby="my-helper-text"
-              value={state.value}
-              onChange={(e) => setState({ ...state, value: e.target.value })}
-            />
-          </FormControl>
-        </Grid>
+        <Typography component="h1" variant="h5">
+          Talk to your Friend
+        </Typography>
+        <Typography component="h4">Create your room</Typography>
 
-        <Grid item xs={12}>
-          <FormControl>
-            <InputLabel htmlFor="my-input">Chat room name</InputLabel>
-            <Input
-              id="my-input"
-              aria-describedby="my-helper-text"
-              value={state.roomName}
-              onChange={(e) => setState({ ...state, roomName: e.target.value })}
-            />
-          </FormControl>
-        </Grid>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Your Name"
+            name="name"
+            autoComplete="name"
+            autoFocus
+            value={state.value}
+            onChange={(e) => setState({ ...state, value: e.target.value })}
+          />
 
-        <Grid item xs={12}>
-          <Link to={`/room/${state.roomName}`}>
-            <Button variant="contained" color="primary" fullWidth>
-              Create Room
-            </Button>
-          </Link>
-        </Grid>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Chat room name"
+            value={state.roomName}
+            onChange={(e) => setState({ ...state, roomName: e.target.value })}
+          />
+
+          <Button variant="contained" color="primary" fullWidth>
+            Create Room
+          </Button>
+          {/* <Link to={`/room/${state.roomName}`}></Link> */}
+        </Box>
       </Box>
     </Container>
   );

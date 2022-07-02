@@ -317,7 +317,7 @@ const Channel = ({ socket, roomCreatorID }) => {
           toast.warn(`${event.streamid} saiu`);
           const userArrays = connection.streamEvents.selectAll();
           setUsers(userArrays);
-        }, 500);
+        }, 300);
       }
     };
 

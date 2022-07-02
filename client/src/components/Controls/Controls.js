@@ -14,17 +14,17 @@ import {
   IconButton,
 } from "@mui/material";
 /** icons */
-import VideocamIcon from "@material-ui/icons/Videocam";
-import VideocamOffIcon from "@material-ui/icons/VideocamOff";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import VideocamOffIcon from "@mui/icons-material/VideocamOff";
 
-import ChatIcon from "@material-ui/icons/Chat";
-import CallEndIcon from "@material-ui/icons/CallEnd";
+import ChatIcon from "@mui/icons-material/Chat";
+import CallEndIcon from "@mui/icons-material/CallEnd";
 
-import MicIcon from "@material-ui/icons/Mic";
-import MicOffIcon from "@material-ui/icons/MicOff";
+import MicIcon from "@mui/icons-material/Mic";
+import MicOffIcon from "@mui/icons-material/MicOff";
 
-import SendIcon from "@material-ui/icons/Send";
-import PersonIcon from "@material-ui/icons/Person";
+import SendIcon from "@mui/icons-material/Send";
+import PersonIcon from "@mui/icons-material/Person";
 
 const messagesArray = [];
 
