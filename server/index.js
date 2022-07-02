@@ -19,7 +19,7 @@ if (environment === "development") {
 
 /** global variables */
 global.rooms = {};
-global.offers = {};
+global.users = {};
 
 createSocket(server);
 createRoutes(app);

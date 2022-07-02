@@ -10,7 +10,7 @@ export default (server) => {
   io.on("connection", (socket) => {
     console.log("< NEW CONNECTION FROM CLIENT > ");
 
-    socket.on("create-room", (roomName, userID) => {
+    socket.on("create-room", ({ roomName, userID, name }) => {
       console.log("< CREATE ROOM > ", roomName, userID, rooms);
       socket.join(roomName);
       io.to(roomName).emit("chat-message", "a new user has joined the room");
@@ -18,18 +18,33 @@ export default (server) => {
       /** check if room exist */
       if (rooms[roomName]) {
         console.log("< ROOM EXIST > ", userID);
+        users[roomName] = [
+          ...users[roomName],
+          {
+            userID,
+            name,
+          },
+        ];
       }
       if (!rooms[roomName]) {
         console.log("< ROOM DOESNT EXIST : CREATING... >");
         rooms[roomName] = [];
+        users[roomName] = [];
       }
+      /** check if user exist ins room */
+      console.log("< USER NAME AFTER CREATED  > ", users);
     });
 
-    socket.on("add-user-room", (userID, roomName) => {
+    socket.on("add-user-room", ({ userID, roomName, name }) => {
       // rooms[roomName].push(userID)
       if (rooms[roomName]) {
         rooms[roomName].push(userID);
-        io.in(roomName).emit("add-user-room", rooms, userID);
+        io.in(roomName).emit("add-user-room", {
+          rooms,
+          userID,
+          enterUserName: name,
+          users: users[roomName],
+        });
 
         /** create room creator */
         if (rooms[roomName].length > 0) {
@@ -37,7 +52,7 @@ export default (server) => {
           socket.emit("add-user-creator-room", roomCreator);
         }
       }
-      console.log("< ADD USER IN ROOM > ", rooms, rooms[roomName]);
+      console.log("< ADD USER IN ROOM > ", userID, roomName, name);
     });
 
     socket.on("chat-message", (userID, roomName, msg) => {
@@ -47,6 +62,12 @@ export default (server) => {
       io.to(roomName).emit("chat-message", {
         id: userID,
         msg,
+        users: users[roomName],
+        // user: {
+        //   name: users[roomName].filter(
+        //     (payload) => payload.userID === userID
+        //   )[0],
+        // },
       });
     });
 
@@ -58,7 +79,30 @@ export default (server) => {
       roomsKeys.map((room) => {
         return (rooms[room] = rooms[room].filter((user) => user !== socket.id));
       });
-      io.emit("remove-user-room", rooms);
+
+      const usersKey = Object.keys(users);
+
+      let leftUserPayload = false;
+
+      usersKey.map((room) => {
+        /** take the exited user */
+        leftUserPayload = users[room].filter(
+          (payload) => payload?.userID === socket?.id
+        )[0];
+
+        return (users[room] = users[room].filter(
+          (payload) => payload?.userID !== socket.id
+        ));
+      });
+
+      console.log(
+        "< CLIENT DISCONNECTED : SERVER > ",
+        socket.id,
+        usersKey,
+        roomsKeys,
+        leftUserPayload
+      );
+      io.emit("remove-user-room", { rooms, leftUser: leftUserPayload });
     });
   });
 };

@@ -3,8 +3,14 @@ import { io } from "socket.io-client";
 // import P2P from "socket.io-p2p";
 /** component */
 import Channel from "components/Channel/Channel";
+import Loading from "components/Loading/Loading";
+/** providers */
+import { useSession } from "providers/SessionProvider";
+/** notification */
+import { toast } from "react-toastify";
 
 const Room = () => {
+  const { session } = useSession();
   let socket = null;
   let checkAgain = null;
 
@@ -18,8 +24,8 @@ const Room = () => {
   const [roomCreator, setRoomCreator] = useState("");
 
   useEffect(() => {
-    connectSocket();
-  }, []);
+    !session?.isLoading && connectSocket();
+  }, [session?.isLoading]);
 
   const connectSocket = () => {
     console.log("< CONNECT SOCKET > ", process.env.NODE_ENV);
@@ -31,9 +37,20 @@ const Room = () => {
     socket = io(String(defineURL()));
 
     socket.on("connect", () => {
-      console.log("< CLIENT SOCKET CONNECTED > ", socket?.id);
-      socket.emit("create-room", String(window.location.pathname), socket?.id);
-      socket.emit("add-user-room", socket.id, String(window.location.pathname));
+      console.log("< CLIENT SOCKET CONNECTED > ", {
+        userID: socket?.id,
+        name: session?.name,
+      });
+      socket.emit("create-room", {
+        roomName: String(window.location.pathname),
+        userID: socket?.id,
+        name: session?.name,
+      });
+      socket.emit("add-user-room", {
+        userID: socket?.id,
+        roomName: String(window.location.pathname),
+        name: session?.name,
+      });
 
       setState({
         ...state,
@@ -47,8 +64,9 @@ const Room = () => {
       setRoomCreator(roomCreatorID);
     });
 
-    socket.on("add-user-room", (users, userId) => {
-      console.log("< ADD USER ROOM > ", users, userId);
+    socket.on("add-user-room", ({ rooms, userID, users, enterUserName }) => {
+      console.log("< ADD USER ROOM > ", rooms, userID, users, enterUserName);
+      socket.id !== userID && toast.info(`${enterUserName} entrou`);
       // if (userId && userId !== socket.id && !document.getElementById(`attendant-${userId}`) ) {
       //   /** create image for attendant */
       //   let node = document.createElement('video')
@@ -58,8 +76,9 @@ const Room = () => {
       // }
     });
 
-    socket.on("remove-user-room", (rooms) => {
-      console.log("< REMOVE USER FROM ROOM > ", rooms);
+    socket.on("remove-user-room", ({ rooms, leftUser }) => {
+      console.log("< REMOVE USER FROM ROOM > ", rooms, leftUser);
+      toast.warn(`${leftUser?.name} saiu`);
     });
 
     let count = 0;
@@ -77,6 +96,8 @@ const Room = () => {
       count++;
     }, 1000);
   };
+
+  if (session?.isLoading) return <Loading text="Loading..." />;
 
   return <Channel socket={state.socket} roomCreatorID={roomCreator} />;
 };

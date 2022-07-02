@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 /** style */
 import * as El from "./Layout.style";
 /** components */
@@ -31,6 +31,7 @@ const RoutesApp = () => {
           <Routes>
             <Route path="/" element={SuspenseHOC(<Home />)} />
             <Route path="/room/:name" element={SuspenseHOC(<Room />)} />
+            <Route path="*" element={<Navigate to="/" replace />} />
             {/* <Route path="/room/:name" element={Room} /> */}
             {/* <Redirect push to="/" /> */}
           </Routes>
