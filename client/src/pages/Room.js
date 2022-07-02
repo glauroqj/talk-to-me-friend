@@ -66,7 +66,7 @@ const Room = () => {
 
     socket.on("add-user-room", ({ rooms, userID, users, enterUserName }) => {
       console.log("< ADD USER ROOM > ", rooms, userID, users, enterUserName);
-      toast.info(`${enterUserName} entrou`);
+      socket.id !== userID && toast.info(`${enterUserName} entrou`);
       // if (userId && userId !== socket.id && !document.getElementById(`attendant-${userId}`) ) {
       //   /** create image for attendant */
       //   let node = document.createElement('video')
