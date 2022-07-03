@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 
 /** style */
@@ -28,7 +28,7 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import SendIcon from "@mui/icons-material/Send";
 import PersonIcon from "@mui/icons-material/Person";
 
-const messagesArray = [];
+let messagesArray = [];
 
 const Controls = ({ socket, users }) => {
   const [micState, setMicState] = useState({
@@ -45,16 +45,61 @@ const Controls = ({ socket, users }) => {
   });
   const [messages, setMessages] = useState([]);
 
+  const [user, setUser] = useState(false);
+
   useEffect(() => {
     if (socket?.connected) {
       console.log("< SOCKET CONTROLS > ", socket);
       socket.on("chat-message", (payloadMsg) => {
-        console.log("< RECEIVING MESSAGE > ", payloadMsg, chatState);
-        messagesArray.unshift(payloadMsg);
-        setMessages([...messages, payloadMsg]);
+        //   {
+        //     "id": "kkEx7W4s5MOdxkQIAABh",
+        //     "message": "asds",
+        //     "users": [
+        //         {
+        //             "userID": "kkEx7W4s5MOdxkQIAABh",
+        //             "name": "Glauro Quintão Juliani"
+        //         }
+        //     ]
+        // }
+        const formattedPayload = attachUserSenderIntoPayload(payloadMsg);
+
+        console.log(
+          "< RECEIVING MESSAGE > ",
+          payloadMsg,
+          chatState,
+          formattedPayload
+        );
+        messagesArray = [formattedPayload, ...messagesArray];
+        setMessages([...messages, formattedPayload]);
       });
     }
   }, [socket]);
+
+  const attachUserSenderIntoPayload = (payloadMsg) => {
+    if (!payloadMsg?.id) {
+      return {
+        sender: {
+          name: "Robot",
+        },
+        ...payloadMsg,
+      };
+    }
+
+    const sender = payloadMsg.users.find(
+      (item) => item?.userID === payloadMsg?.id
+    );
+
+    return {
+      ...payloadMsg,
+      sender,
+    };
+  };
+
+  // useEffect(() => {
+  //   const userFinal = users.find((item) => item?.userID === socket?.id);
+  //   console.log("< userFinal controls > ", userFinal);
+  //   setUser(userFinal);
+  // }, [users]);
 
   const handleBarClick = (type) => {
     const { connection, userIdLocal } = window;
@@ -133,7 +178,13 @@ const Controls = ({ socket, users }) => {
                 messagesArray.map((item) => (
                   <li>
                     <Divider />
-                    <Badge badgeContent={"Teste"} color="primary" />
+                    {item?.sender?.name && (
+                      <Badge
+                        badgeContent={item?.sender?.name}
+                        color="primary"
+                      />
+                    )}
+
                     <label>{item.userId}</label>
                     <div>{item?.message}</div>
                   </li>
@@ -163,7 +214,7 @@ const Controls = ({ socket, users }) => {
                   id="outlined-adornment-password"
                   type={"text"}
                   autoFocus
-                  value={chatState.messageText}
+                  value={chatState?.messageText}
                   onChange={(e) =>
                     setChatState({ ...chatState, messageText: e.target.value })
                   }

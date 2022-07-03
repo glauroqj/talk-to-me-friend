@@ -357,6 +357,13 @@ const Channel = ({ socket, roomCreatorID, usersRoom }) => {
       }
     });
 
+  const canRenderControls = () => {
+    if (usersRoom.length <= 0) return false;
+    const check = usersRoom.find((item) => item.userID === socket.id);
+    return check ? <Controls socket={socket} users={usersRoom} /> : false;
+    // return <Controls socket={socket} users={usersRoom} />;
+  };
+
   return (
     <El.ChannelContainer>
       {isLoading && (
@@ -380,9 +387,7 @@ const Channel = ({ socket, roomCreatorID, usersRoom }) => {
 
       <El.ChannelAttendants id="attendants" />
 
-      {socket && socket.connected && (
-        <Controls socket={socket} users={usersRoom} />
-      )}
+      {socket?.connected && canRenderControls()}
     </El.ChannelContainer>
   );
 };
