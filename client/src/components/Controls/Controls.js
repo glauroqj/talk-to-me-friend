@@ -142,12 +142,11 @@ const Controls = ({ socket, users }) => {
                   /** send to socket here */
                   setChatState({ ...chatState, messageText: "" });
                   socket &&
-                    socket.emit(
-                      "chat-message",
-                      socket?.id,
-                      String(window.location.pathname),
-                      `${String(chatState?.messageText)}`
-                    );
+                    socket.emit("chat-message", {
+                      userID: socket?.id,
+                      roomName: String(window.location.pathname),
+                      message: `${String(chatState?.messageText)}`,
+                    });
                 }
               }}
             >
@@ -172,12 +171,11 @@ const Controls = ({ socket, users }) => {
                           /** send to socket here */
                           setChatState({ ...chatState, messageText: "" });
                           socket &&
-                            socket.emit(
-                              "chat-message",
-                              socket.id,
-                              String(window.location.pathname),
-                              `${chatState.messageText}`
-                            );
+                            socket.emit("chat-message", {
+                              userID: socket?.id,
+                              roomName: String(window.location.pathname),
+                              message: `${String(chatState?.messageText)}`,
+                            });
                         }}
                         edge="end"
                       >

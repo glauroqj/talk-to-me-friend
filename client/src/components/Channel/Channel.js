@@ -388,6 +388,7 @@ const Channel = ({ socket, roomCreatorID }) => {
 Channel.propTypes = {
   socket: PropTypes.object,
   roomCreatorID: PropTypes.string,
+  usersRoom: PropTypes.array,
 };
 
 export default Channel;

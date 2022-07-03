@@ -23,6 +23,8 @@ const Room = () => {
 
   const [roomCreator, setRoomCreator] = useState("");
 
+  const [usersRoom, setUsersRoom] = useState([]);
+
   useEffect(() => {
     !session?.isLoading && connectSocket();
   }, [session, session?.isLoading]);
@@ -67,6 +69,8 @@ const Room = () => {
     socket.on("add-user-room", ({ rooms, userID, users, enterUserName }) => {
       console.log("< ADD USER ROOM > ", rooms, userID, users, enterUserName);
       socket.id !== userID && toast.info(`${enterUserName} entrou`);
+
+      setUsersRoom([...users]);
       // if (userId && userId !== socket.id && !document.getElementById(`attendant-${userId}`) ) {
       //   /** create image for attendant */
       //   let node = document.createElement('video')
@@ -76,9 +80,10 @@ const Room = () => {
       // }
     });
 
-    socket.on("remove-user-room", ({ rooms, leftUser }) => {
+    socket.on("remove-user-room", ({ rooms, leftUser, remainingUsers }) => {
       console.log("< REMOVE USER FROM ROOM > ", rooms, leftUser);
       toast.warn(`${leftUser?.name} saiu`);
+      setUsersRoom([...remainingUsers]);
     });
 
     let count = 0;
@@ -99,7 +104,13 @@ const Room = () => {
 
   if (session?.isLoading) return <Loading text="Loading..." />;
 
-  return <Channel socket={state.socket} roomCreatorID={roomCreator} />;
+  return (
+    <Channel
+      socket={state.socket}
+      roomCreatorID={roomCreator}
+      usersRoom={usersRoom}
+    />
+  );
 };
 
 export default Room;
