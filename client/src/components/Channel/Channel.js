@@ -272,6 +272,12 @@ const Channel = ({ socket, roomCreatorID, usersRoom }) => {
       event.mediaElement.muted = true;
       event.mediaElement.volume = 0;
 
+      /** create a box for video first */
+      let boxVideo = document.createElement("div");
+      boxVideo.setAttribute("id", `box-attendant-${event.streamid}`);
+      boxVideo.setAttribute("class", "animated fadeIn box-attendant");
+      document.getElementById("attendants").appendChild(boxVideo);
+      /** create a box for video first */
       let video = document.createElement("video");
       video.setAttribute("id", `attendant-${event.streamid}`);
       video.setAttribute("class", "animated fadeIn");
@@ -295,7 +301,10 @@ const Channel = ({ socket, roomCreatorID, usersRoom }) => {
         }
       }
 
-      document.getElementById("attendants").appendChild(video);
+      document
+        .getElementById(`box-attendant-${event.streamid}`)
+        .appendChild(video);
+      // document.getElementById("attendants").appendChild(video);
 
       /** update users */
       // const userArrays = connection.streamEvents.selectAll();
