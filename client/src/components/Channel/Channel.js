@@ -13,11 +13,11 @@ import { Button } from "@mui/material";
 window.connection = {};
 window.userIdLocal = null;
 
-const Channel = ({ socket, roomCreatorID }) => {
+const Channel = ({ socket, roomCreatorID, usersRoom }) => {
   let checkAgain = null;
 
   const [isLoading, setIsLoading] = useState(true);
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -298,8 +298,8 @@ const Channel = ({ socket, roomCreatorID }) => {
       document.getElementById("attendants").appendChild(video);
 
       /** update users */
-      const userArrays = connection.streamEvents.selectAll();
-      setUsers(userArrays);
+      // const userArrays = connection.streamEvents.selectAll();
+      // setUsers(userArrays);
 
       setTimeout(() => {
         setIsLoading(false);
@@ -380,7 +380,9 @@ const Channel = ({ socket, roomCreatorID }) => {
 
       <El.ChannelAttendants id="attendants" />
 
-      {socket && socket.connected && <Controls socket={socket} users={users} />}
+      {socket && socket.connected && (
+        <Controls socket={socket} users={usersRoom} />
+      )}
     </El.ChannelContainer>
   );
 };

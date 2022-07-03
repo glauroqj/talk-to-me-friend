@@ -12,6 +12,8 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
+  Divider,
+  Badge,
 } from "@mui/material";
 /** icons */
 import VideocamIcon from "@mui/icons-material/Videocam";
@@ -127,11 +129,13 @@ const Controls = ({ socket, users }) => {
         <El.ChatContainer>
           <El.ControlsChat>
             <ul>
-              {messagesArray.length > 0 &&
+              {messagesArray?.length > 0 &&
                 messagesArray.map((item) => (
                   <li>
+                    <Divider />
+                    <Badge badgeContent={"Teste"} color="primary" />
                     <label>{item.userId}</label>
-                    <div>{item.msg}</div>
+                    <div>{item?.message}</div>
                   </li>
                 ))}
             </ul>
@@ -139,6 +143,7 @@ const Controls = ({ socket, users }) => {
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
+                  if (chatState?.messageText === "") return false;
                   /** send to socket here */
                   setChatState({ ...chatState, messageText: "" });
                   socket &&
@@ -152,7 +157,7 @@ const Controls = ({ socket, users }) => {
             >
               <FormControl variant="outlined" className="form-message">
                 <InputLabel htmlFor="outlined-adornment-password">
-                  Mensagem
+                  Message
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-password"
@@ -167,7 +172,7 @@ const Controls = ({ socket, users }) => {
                       <IconButton
                         aria-label="toggle password visibility"
                         onClick={() => {
-                          if (chatState.message === "") return false;
+                          if (chatState?.messageText === "") return false;
                           /** send to socket here */
                           setChatState({ ...chatState, messageText: "" });
                           socket &&
