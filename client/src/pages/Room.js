@@ -71,13 +71,25 @@ const Room = () => {
       socket.id !== userID && toast.info(`${enterUserName} entrou`);
 
       setUsersRoom([...users]);
-      // if (userId && userId !== socket.id && !document.getElementById(`attendant-${userId}`) ) {
-      //   /** create image for attendant */
-      //   let node = document.createElement('video')
-      //   node.setAttribute('autoplay', 'autoplay')
-      //   node.setAttribute('id', `attendant-${userId}`)
-      //   document.getElementById('attendants').appendChild(node)
+
+      /** create a tag name */
+      // if (window.userIdLocal) {
+      //   const _findUserName = () => {
+      //     if (users.length <= 0) return "---";
+      //     const user = users.find((item) => item?.userID === socket?.id);
+      //     console.log("< USRNAME ON TAG > ", users);
+      //     // return user?.name;
+      //   };
+
+      //   let divName = document.createElement("div");
+      //   divName.setAttribute("class", "animated fadeIn attendant-name");
+      //   divName.innerHTML = `${_findUserName()}`;
+
+      //   document
+      //     .getElementById(`box-attendant-${window.userIdLocal}`)
+      //     .appendChild(divName);
       // }
+      /** end create a tag name */
     });
 
     socket.on("remove-user-room", ({ rooms, leftUser, remainingUsers }) => {

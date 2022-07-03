@@ -34,9 +34,20 @@ export const ChannelAttendants = styled.div`
   transition: width 0.4s ease;
   // height: 100vh;
 
+  .attendant-name {
+    position: absolute;
+    right: 0;
+    background: #fff;
+    color: #323232;
+    z-index: 1;
+    bottom: 0;
+    padding: 10px;
+  }
+
   .box-attendant {
     flex: 1 1 40%;
     height: auto;
+    position: relative;
 
     video {
       max-height: 100%;
