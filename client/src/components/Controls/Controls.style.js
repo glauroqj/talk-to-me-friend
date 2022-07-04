@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 
 export const ControlsContainer = styled.div`
   display: flex;
@@ -11,7 +11,7 @@ export const ControlsContainer = styled.div`
     width: 100%;
     border-top: 1px solid #cecece;
   }
-`
+`;
 export const ChatContainer = styled.div`
   display: flex;
   background: #f1f1f1;
@@ -22,10 +22,10 @@ export const ChatContainer = styled.div`
   z-index: 8;
 
   // 640px
-  @media( max-width: 640px ) {
+  @media (max-width: 640px) {
     max-width: 100%;
   }
-`
+`;
 export const ControlsChat = styled.div`
   display: flex;
   width: 100%;
@@ -35,6 +35,17 @@ export const ControlsChat = styled.div`
     height: auto;
     overflow-y: auto;
     padding-bottom: 100px;
+
+    li {
+      padding: 6px;
+
+      .control-chat-name {
+        padding: 4px 0px;
+        font-size: 16px;
+        color: ${(props) => props.theme.color.c_main};
+        font-weight: ${(props) => props.theme.typography.fontWeight["bold"]};
+      }
+    }
   }
 
   .form-message {
@@ -43,7 +54,5 @@ export const ControlsChat = styled.div`
     width: 100%;
     background-color: #fff;
   }
-`
-export const ControlsChatActions = styled.div`
-
-`
+`;
+export const ControlsChatActions = styled.div``;

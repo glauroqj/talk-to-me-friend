@@ -179,10 +179,9 @@ const Controls = ({ socket, users }) => {
                   <li>
                     <Divider />
                     {item?.sender?.name && (
-                      <Badge
-                        badgeContent={item?.sender?.name}
-                        color="primary"
-                      />
+                      <div className="control-chat-name">
+                        {item?.sender?.name}
+                      </div>
                     )}
 
                     <label>{item.userId}</label>
