@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 
 /** style */
@@ -12,6 +12,8 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
+  Divider,
+  Badge,
 } from "@mui/material";
 /** icons */
 import VideocamIcon from "@mui/icons-material/Videocam";
@@ -26,7 +28,7 @@ import MicOffIcon from "@mui/icons-material/MicOff";
 import SendIcon from "@mui/icons-material/Send";
 import PersonIcon from "@mui/icons-material/Person";
 
-const messagesArray = [];
+let messagesArray = [];
 
 const Controls = ({ socket, users }) => {
   const [micState, setMicState] = useState({
@@ -43,16 +45,61 @@ const Controls = ({ socket, users }) => {
   });
   const [messages, setMessages] = useState([]);
 
+  const [user, setUser] = useState(false);
+
   useEffect(() => {
     if (socket?.connected) {
       console.log("< SOCKET CONTROLS > ", socket);
       socket.on("chat-message", (payloadMsg) => {
-        console.log("< RECEIVING MESSAGE > ", payloadMsg, chatState);
-        messagesArray.unshift(payloadMsg);
-        setMessages([...messages, payloadMsg]);
+        //   {
+        //     "id": "kkEx7W4s5MOdxkQIAABh",
+        //     "message": "asds",
+        //     "users": [
+        //         {
+        //             "userID": "kkEx7W4s5MOdxkQIAABh",
+        //             "name": "Glauro Quintão Juliani"
+        //         }
+        //     ]
+        // }
+        const formattedPayload = attachUserSenderIntoPayload(payloadMsg);
+
+        console.log(
+          "< RECEIVING MESSAGE > ",
+          payloadMsg,
+          chatState,
+          formattedPayload
+        );
+        messagesArray = [formattedPayload, ...messagesArray];
+        setMessages([...messages, formattedPayload]);
       });
     }
   }, [socket]);
+
+  const attachUserSenderIntoPayload = (payloadMsg) => {
+    if (!payloadMsg?.id) {
+      return {
+        sender: {
+          name: "Robot",
+        },
+        ...payloadMsg,
+      };
+    }
+
+    const sender = payloadMsg.users.find(
+      (item) => item?.userID === payloadMsg?.id
+    );
+
+    return {
+      ...payloadMsg,
+      sender,
+    };
+  };
+
+  // useEffect(() => {
+  //   const userFinal = users.find((item) => item?.userID === socket?.id);
+  //   console.log("< userFinal controls > ", userFinal);
+  //   setUser(userFinal);
+  // }, [users]);
 
   const handleBarClick = (type) => {
     const { connection, userIdLocal } = window;
@@ -127,11 +174,19 @@ const Controls = ({ socket, users }) => {
         <El.ChatContainer>
           <El.ControlsChat>
             <ul>
-              {messagesArray.length > 0 &&
+              {messagesArray?.length > 0 &&
                 messagesArray.map((item) => (
                   <li>
+                    <Divider />
+                    {item?.sender?.name && (
+                      <Badge
+                        badgeContent={item?.sender?.name}
+                        color="primary"
+                      />
+                    )}
+
                     <label>{item.userId}</label>
-                    <div>{item.msg}</div>
+                    <div>{item?.message}</div>
                   </li>
                 ))}
             </ul>
@@ -139,27 +194,27 @@ const Controls = ({ socket, users }) => {
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
+                  if (chatState?.messageText === "") return false;
                   /** send to socket here */
                   setChatState({ ...chatState, messageText: "" });
                   socket &&
-                    socket.emit(
-                      "chat-message",
-                      socket?.id,
-                      String(window.location.pathname),
-                      `${String(chatState?.messageText)}`
-                    );
+                    socket.emit("chat-message", {
+                      userID: socket?.id,
+                      roomName: String(window.location.pathname),
+                      message: `${String(chatState?.messageText)}`,
+                    });
                 }
               }}
             >
               <FormControl variant="outlined" className="form-message">
                 <InputLabel htmlFor="outlined-adornment-password">
-                  Mensagem
+                  Message
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-password"
                   type={"text"}
                   autoFocus
-                  value={chatState.messageText}
+                  value={chatState?.messageText}
                   onChange={(e) =>
                     setChatState({ ...chatState, messageText: e.target.value })
                   }
@@ -168,16 +223,15 @@ const Controls = ({ socket, users }) => {
                       <IconButton
                         aria-label="toggle password visibility"
                         onClick={() => {
-                          if (chatState.message === "") return false;
+                          if (chatState?.messageText === "") return false;
                           /** send to socket here */
                           setChatState({ ...chatState, messageText: "" });
                           socket &&
-                            socket.emit(
-                              "chat-message",
-                              socket.id,
-                              String(window.location.pathname),
-                              `${chatState.messageText}`
-                            );
+                            socket.emit("chat-message", {
+                              userID: socket?.id,
+                              roomName: String(window.location.pathname),
+                              message: `${String(chatState?.messageText)}`,
+                            });
                         }}
                         edge="end"
                       >

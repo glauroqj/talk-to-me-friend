@@ -13,11 +13,11 @@ import { Button } from "@mui/material";
 window.connection = {};
 window.userIdLocal = null;
 
-const Channel = ({ socket, roomCreatorID }) => {
+const Channel = ({ socket, roomCreatorID, usersRoom, session }) => {
   let checkAgain = null;
 
   const [isLoading, setIsLoading] = useState(true);
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -35,189 +35,6 @@ const Channel = ({ socket, roomCreatorID }) => {
       handleConnection();
     }
   }, [socket, roomCreatorID]);
-
-  const getClientConnection = () => {
-    if (!socket?.connected) return false;
-    console.log("< CHANNEL - SOCKET > ", socket);
-    const { id } = socket;
-    let checkElement = document.getElementById(`attendant-${id}`);
-    let myVideoStream;
-    let myVideo = document.createElement("video");
-    // myVideo.setAttribute("id", `attendant-${id}`);
-    let rtcPeerConnection;
-    const iceServers = {
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        { urls: "stun:stun1.l.google.com:19302" },
-        { urls: "stun:stun2.l.google.com:19302" },
-        { urls: "stun:stun3.l.google.com:19302" },
-        { urls: "stun:stun4.l.google.com:19302" },
-      ],
-    };
-
-    /** ONLY SOCKET CONNECTIONs */
-    // socket.on("start_call", async () => {
-    //   console.log(
-    //     "Socket event callback: start_call ",
-    //     socket?.id === roomCreatorID
-    //   );
-
-    //   if (socket?.id === roomCreatorID) {
-    //     rtcPeerConnection = new RTCPeerConnection(iceServers);
-    //     _helperAddLocalTracks(rtcPeerConnection, myVideoStream);
-    //     rtcPeerConnection.ontrack = _helperSetRemoteStream;
-    //     rtcPeerConnection.onicecandidate = _helperSendIceCandidate;
-    //     await _helperCreateOffer(rtcPeerConnection);
-    //   }
-    // });
-
-    // socket.on("webrtc_offer", async (event) => {
-    //   console.log("Socket event callback: webrtc_offer ", event);
-
-    //   if (socket?.id !== roomCreatorID) {
-    //     rtcPeerConnection = new RTCPeerConnection(iceServers);
-    //     _helperAddLocalTracks(rtcPeerConnection, myVideoStream);
-    //     rtcPeerConnection.ontrack = _helperSetRemoteStream;
-    //     rtcPeerConnection.onicecandidate = _helperSendIceCandidate;
-    //     rtcPeerConnection.setRemoteDescription(
-    //       new RTCSessionDescription(event)
-    //     );
-    //     await _helperCreateAnswer(rtcPeerConnection);
-    //   }
-    // });
-
-    // socket.on("webrtc_answer", (event) => {
-    //   console.log("Socket event callback: webrtc_answer ", event);
-    //   rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(event));
-    // });
-
-    // socket.on("webrtc_ice_candidate", (event) => {
-    //   console.log("Socket event callback: webrtc_ice_candidate ", event);
-    //   // ICE candidate configuration.
-    //   // let candidate = new RTCIceCandidate({
-    //   //   sdpMLineIndex: event.label,
-    //   //   candidate: event.candidate,
-    //   // });
-    //   // rtcPeerConnection.addIceCandidate(candidate);
-    // });
-
-    if (checkElement) {
-      /** duplicated element */
-      checkElement.remove();
-    }
-
-    myVideo.muted = true;
-    navigator.mediaDevices
-      .getUserMedia({
-        audio: true,
-        video: true,
-      })
-      .then((stream) => {
-        myVideoStream = stream;
-        _addVideoStream(myVideo, stream);
-      });
-  };
-
-  const _addVideoStream = (video, stream) => {
-    video.srcObject = stream;
-    video.addEventListener("loadedmetadata", () => {
-      video.play();
-      // myVideo.append(video);
-      document.getElementById("attendants").appendChild(video);
-    });
-    // socket.emit("start_call", String(window?.location?.pathname));
-  };
-
-  /** HELPER FUNCTIONS */
-  const _helperAddLocalTracks = (rtcPeerConnection, myVideoStream) => {
-    console.log("< _helperAddLocalTracks > ", myVideoStream);
-    myVideoStream.getTracks().forEach((track) => {
-      rtcPeerConnection.addTrack(track, myVideoStream);
-    });
-  };
-
-  const _helperSetRemoteStream = (event) => {
-    console.log("< _helperSetRemoteStream > ", event);
-    let checkElement = document.getElementById(`attendant-${socket?.id}`);
-
-    if (checkElement) {
-      /** duplicated element */
-      checkElement.remove();
-    }
-
-    let video = document.createElement("video");
-    video.setAttribute("id", `attendant-${socket?.id}`);
-    video.setAttribute("class", "animated fadeIn");
-
-    try {
-      video.setAttributeNode(document.createAttribute("autoplay"));
-      video.setAttributeNode(document.createAttribute("playsinline"));
-    } catch (e) {
-      video.setAttribute("autoplay", true);
-      video.setAttribute("playsinline", true);
-    }
-
-    document.getElementById("attendants").appendChild(video);
-
-    video.srcObject = event.streams[0];
-    // let remoteVideo = document.createElement("video");
-    // remoteVideo.muted = true;
-    // remoteVideo.srcObject = event.streams[0]
-  };
-
-  const _helperSendIceCandidate = (event) => {
-    console.log("< _helperSendIceCandidate > ", event);
-    if (event.candidate) {
-      socket.emit("webrtc_ice_candidate", {
-        ...event,
-        roomName: String(window?.location?.pathname),
-        label: event?.candidate?.sdpMLineIndex,
-        candidate: event?.candidate?.candidate,
-      });
-    }
-  };
-
-  const _helperCreateOffer = async (rtcPeerConnection) => {
-    try {
-      const sessionDescription = await rtcPeerConnection.createOffer();
-      rtcPeerConnection.setLocalDescription(sessionDescription);
-
-      console.log(
-        "< _helperCreateOffer > ",
-        sessionDescription,
-        typeof sessionDescription,
-        rtcPeerConnection
-      );
-      socket.emit("webrtc_offer", {
-        roomName: String(window?.location?.pathname),
-        sdp: sessionDescription,
-        userID: socket?.id,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const _helperCreateAnswer = async (rtcPeerConnection) => {
-    try {
-      const sessionDescription = await rtcPeerConnection.createAnswer();
-      rtcPeerConnection.setLocalDescription(sessionDescription);
-
-      console.log(
-        "< _helperCreateAnswer > ",
-        sessionDescription,
-        rtcPeerConnection
-      );
-      socket.emit("webrtc_answer", {
-        roomName: String(window?.location?.pathname),
-        sdp: sessionDescription,
-        userID: socket?.id,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  /** END HELPER FUNCTIONS */
 
   const handleConnection = async () => {
     const isRTCLoaded = await externalLibIsLoaded("rtc");
@@ -264,6 +81,7 @@ const Channel = ({ socket, roomCreatorID }) => {
 
       if (checkElement) {
         /** duplicated element */
+        document.getElementById(`box-attendant-${event.streamid}`).remove();
         checkElement.remove();
       }
 
@@ -271,6 +89,13 @@ const Channel = ({ socket, roomCreatorID }) => {
       event.mediaElement.removeAttribute("srcObject");
       event.mediaElement.muted = true;
       event.mediaElement.volume = 0;
+
+      /** create a box for video first */
+      let boxVideo = document.createElement("div");
+      boxVideo.setAttribute("id", `box-attendant-${event.streamid}`);
+      boxVideo.setAttribute("class", "animated fadeIn box-attendant");
+      document.getElementById("attendants").appendChild(boxVideo);
+      /** end create a box for video first */
 
       let video = document.createElement("video");
       video.setAttribute("id", `attendant-${event.streamid}`);
@@ -295,21 +120,33 @@ const Channel = ({ socket, roomCreatorID }) => {
         }
       }
 
-      document.getElementById("attendants").appendChild(video);
+      document
+        .getElementById(`box-attendant-${event.streamid}`)
+        .appendChild(video);
+      // document.getElementById("attendants").appendChild(video);
 
       /** update users */
-      const userArrays = connection.streamEvents.selectAll();
-      setUsers(userArrays);
+      // const userArrays = connection.streamEvents.selectAll();
+      // setUsers(userArrays);
 
       setTimeout(() => {
         setIsLoading(false);
         video.srcObject = event.stream;
+
+        socket?.connected &&
+          socket?.emit("add-id-session-from-another-socket", {
+            userID: socket?.id,
+            sessionID: event?.streamid,
+            roomName: String(window.location.pathname),
+            session,
+          });
       }, 300);
     };
 
     connection.onstreamended = (event) => {
       let checkElement = document.getElementById(`attendant-${event.streamid}`);
       if (checkElement) {
+        document.getElementById(`box-attendant-${event.streamid}`).remove();
         checkElement.remove();
 
         /** update users */
@@ -357,6 +194,13 @@ const Channel = ({ socket, roomCreatorID }) => {
       }
     });
 
+  const canRenderControls = () => {
+    if (usersRoom.length <= 0) return false;
+    const check = usersRoom.find((item) => item.userID === socket.id);
+    return check ? <Controls socket={socket} users={usersRoom} /> : false;
+    // return <Controls socket={socket} users={usersRoom} />;
+  };
+
   return (
     <El.ChannelContainer>
       {isLoading && (
@@ -380,7 +224,7 @@ const Channel = ({ socket, roomCreatorID }) => {
 
       <El.ChannelAttendants id="attendants" />
 
-      {socket && socket.connected && <Controls socket={socket} users={users} />}
+      {socket?.connected && canRenderControls()}
     </El.ChannelContainer>
   );
 };
@@ -388,6 +232,8 @@ const Channel = ({ socket, roomCreatorID }) => {
 Channel.propTypes = {
   socket: PropTypes.object,
   roomCreatorID: PropTypes.string,
+  usersRoom: PropTypes.array,
+  session: PropTypes.object,
 };
 
 export default Channel;
