@@ -138,6 +138,11 @@ const Controls = ({ socket, users }) => {
     if (typeof options[type] === "function" && userIdLocal) options[type]();
   };
 
+  const getDateHour = () => {
+    const event = new Date();
+    return event.toLocaleString("pt-BR");
+  };
+
   return (
     <>
       <El.ControlsContainer>
@@ -180,7 +185,7 @@ const Controls = ({ socket, users }) => {
                     <Divider />
                     {item?.sender?.name && (
                       <div className="control-chat-name">
-                        {item?.sender?.name}
+                        {item?.sender?.name} - {item?.date}
                       </div>
                     )}
 
@@ -201,6 +206,7 @@ const Controls = ({ socket, users }) => {
                       userID: socket?.id,
                       roomName: String(window.location.pathname),
                       message: `${String(chatState?.messageText)}`,
+                      date: getDateHour(),
                     });
                 }
               }}
@@ -230,6 +236,7 @@ const Controls = ({ socket, users }) => {
                               userID: socket?.id,
                               roomName: String(window.location.pathname),
                               message: `${String(chatState?.messageText)}`,
+                              date: getDateHour(),
                             });
                         }}
                         edge="end"

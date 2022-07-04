@@ -15,6 +15,7 @@ export default (server) => {
       socket.join(roomName);
       io.to(roomName).emit("chat-message", {
         message: `a new user has joined the room: ${name}`,
+        date: new Date().toLocaleString("pt-BR"),
       });
 
       /** check if room exist */
@@ -58,7 +59,7 @@ export default (server) => {
       console.log("< ADD USER IN ROOM > ", userID, roomName, name);
     });
 
-    socket.on("chat-message", ({ userID, roomName, message }) => {
+    socket.on("chat-message", ({ userID, roomName, message, date }) => {
       // socket.join(data.username)
       // socket.broadcast.emit('stream', data)
       console.log("< MESSAGE > ", userID, roomName, message);
@@ -66,6 +67,7 @@ export default (server) => {
         id: userID,
         message,
         users: users[roomName],
+        date,
         // user: {
         //   name: users[roomName].filter(
         //     (payload) => payload.userID === userID
