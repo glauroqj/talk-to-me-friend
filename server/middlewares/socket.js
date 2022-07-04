@@ -87,12 +87,12 @@ export default (server) => {
         );
 
         sessionUsers[roomName] = {
-          ...sessionUsers[roomName],
           [userID]: {
             name: session?.name,
             userID,
             sessionID,
           },
+          ...sessionUsers[roomName],
         };
 
         // const newUsersRoomPayload = sessionUsers[roomName].reduce(

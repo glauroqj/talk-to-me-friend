@@ -99,9 +99,18 @@ const Room = () => {
             divName.setAttribute("id", `attendant-name-${sessionID}`);
             divName.setAttribute("class", `animated fadeIn attendant-name`);
             divName.innerHTML = `${name}`;
-            document
-              .getElementById(`box-attendant-${sessionID}`)
-              .appendChild(divName);
+
+            console.log(
+              "< GET A LOT OF > ",
+              document.getElementById(`box-attendant-${sessionID}`)
+            );
+
+            const elementToAppend = document.getElementById(
+              `box-attendant-${sessionID}`
+            );
+            if (elementToAppend) {
+              elementToAppend.appendChild(divName);
+            }
           } else {
             let element = document.getElementById(
               `attendant-name-${sessionID}`
