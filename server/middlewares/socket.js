@@ -74,6 +74,52 @@ export default (server) => {
       });
     });
 
+    /** saves id session to insert users names */
+    socket.on(
+      "add-id-session-from-another-socket",
+      ({ userID, sessionID, roomName, session }) => {
+        console.log(
+          "< ADD ID SESSION FOR TAG NAME > ",
+          userID,
+          sessionID,
+          roomName,
+          session
+        );
+
+        sessionUsers[roomName] = {
+          ...sessionUsers[roomName],
+          [userID]: {
+            name: session?.name,
+            userID,
+            sessionID,
+          },
+        };
+
+        // const newUsersRoomPayload = sessionUsers[roomName].reduce(
+        //   (acc, cur) => {
+        //     console.log(cur, acc);
+        //     if (cur.userID === userID) {
+        //       cur.sessioID = sessionID;
+        //     }
+        //     acc = acc?.length > 0 ? [...acc, cur] : [cur];
+        //     return acc;
+        //   },
+        //   []
+        // );
+
+        // sessionUsers[roomName] = [...newUsersRoomPayload];
+
+        console.log("< sessionUsers > ", sessionUsers[roomName]);
+
+        io.to(roomName).emit("add-id-session-from-another-socket", {
+          userID,
+          sessionID,
+          roomName,
+          sessionUsers: sessionUsers[roomName],
+        });
+      }
+    );
+
     // To listen for a client's disconnection from server and intimate other clients about the same
     socket.on("disconnect", () => {
       console.log("< CLIENT DISCONNECTED : SERVER > ", socket?.id);
@@ -89,6 +135,8 @@ export default (server) => {
       let remainingUsers = [];
 
       usersKey.map((room) => {
+        delete sessionUsers[room][socket?.id];
+
         /** take the exited user */
         leftUserPayload = users[room].filter(
           (payload) => payload?.userID === socket?.id

@@ -13,7 +13,7 @@ import { Button } from "@mui/material";
 window.connection = {};
 window.userIdLocal = null;
 
-const Channel = ({ socket, roomCreatorID, usersRoom }) => {
+const Channel = ({ socket, roomCreatorID, usersRoom, session }) => {
   let checkAgain = null;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -81,6 +81,7 @@ const Channel = ({ socket, roomCreatorID, usersRoom }) => {
 
       if (checkElement) {
         /** duplicated element */
+        document.getElementById(`box-attendant-${event.streamid}`).remove();
         checkElement.remove();
       }
 
@@ -95,23 +96,6 @@ const Channel = ({ socket, roomCreatorID, usersRoom }) => {
       boxVideo.setAttribute("class", "animated fadeIn box-attendant");
       document.getElementById("attendants").appendChild(boxVideo);
       /** end create a box for video first */
-
-      /** create a tag name */
-      // if (window.userIdLocal) {
-      //   const _findUserName = () => {
-      //     if (users.length <= 0) return "---";
-      //     const user = users.find((item) => item?.userID === socket?.id);
-      //     console.log("< USRNAME ON TAG > ", users);
-      //     // return user?.name;
-      //   };
-      //   let divName = document.createElement("div");
-      //   divName.setAttribute("class", "animated fadeIn attendant-name");
-      //   divName.innerHTML = `${_findUserName()}`;
-      //   document
-      //     .getElementById(`box-attendant-${window.userIdLocal}`)
-      //     .appendChild(divName);
-      // }
-      /** end create a tag name */
 
       let video = document.createElement("video");
       video.setAttribute("id", `attendant-${event.streamid}`);
@@ -148,12 +132,21 @@ const Channel = ({ socket, roomCreatorID, usersRoom }) => {
       setTimeout(() => {
         setIsLoading(false);
         video.srcObject = event.stream;
+
+        socket?.connected &&
+          socket?.emit("add-id-session-from-another-socket", {
+            userID: socket?.id,
+            sessionID: event?.streamid,
+            roomName: String(window.location.pathname),
+            session,
+          });
       }, 300);
     };
 
     connection.onstreamended = (event) => {
       let checkElement = document.getElementById(`attendant-${event.streamid}`);
       if (checkElement) {
+        document.getElementById(`box-attendant-${event.streamid}`).remove();
         checkElement.remove();
 
         /** update users */
@@ -240,6 +233,7 @@ Channel.propTypes = {
   socket: PropTypes.object,
   roomCreatorID: PropTypes.string,
   usersRoom: PropTypes.array,
+  session: PropTypes.object,
 };
 
 export default Channel;
