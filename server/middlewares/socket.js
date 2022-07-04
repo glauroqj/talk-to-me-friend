@@ -32,6 +32,7 @@ export default (server) => {
         console.log("< ROOM DOESNT EXIST : CREATING... >");
         rooms[roomName] = [];
         users[roomName] = [];
+        sessionUsers[roomName] = [];
       }
       /** check if user exist ins room */
       console.log("< USER NAME AFTER CREATED  > ", users);
